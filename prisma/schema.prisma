@@ -13,3 +13,48 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Companio {
+  id       String @id
+  logo_url String
+  name     String
+  users    User[]
+
+  @@map("companio")
+}
+
+model User {
+  id                      String                   @id @default(uuid()) @db.Uuid
+  name                    String
+  avatar_url              String
+  companio_id             String
+  companio                Companio                 @relation(fields: [companio_id], references: [id])
+  nightmare_gateway_scores NightmareGatewayScore[]
+
+  @@map("user")
+}
+
+model NightmareGatewayPeriod {
+  id                         String                   @id @default(uuid()) @db.Uuid
+  start                      DateTime                 @db.Date
+  end                        DateTime                 @db.Date
+  first_half_boss_name       String
+  first_half_boss_avatar_url String
+  second_half_boss_name      String
+  second_half_boss_avatar_url String
+  nightmare_gateway_scores   NightmareGatewayScore[]
+
+  @@map("nightmare_gateway_period")
+}
+
+model NightmareGatewayScore {
+  id                 String                  @id @default(uuid()) @db.Uuid
+  user_id            String                  @db.Uuid
+  nightmare_id       String                  @db.Uuid
+  first_half_score   Int
+  second_half_score  Int
+  user               User                    @relation(fields: [user_id], references: [id])
+  nightmare_period   NightmareGatewayPeriod @relation(fields: [nightmare_id], references: [id])
+
+  @@map("nightmare_gateway_score")
+}
