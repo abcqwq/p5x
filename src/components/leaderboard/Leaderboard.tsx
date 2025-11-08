@@ -57,6 +57,12 @@ const CompanioLogo = styled.img`
   height: ${32 / 16}rem;
 `;
 
+const CompanioInnerWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${8 / 16}rem;
+`;
+
 const Score = (score: NightmareGatewayScore, rank: number) => {
   return (
     <ScoreRow key={score.id}>
@@ -66,10 +72,13 @@ const Score = (score: NightmareGatewayScore, rank: number) => {
         {formatNumber(score.first_half_score + score.second_half_score)}
       </Cell>
       <Cell>
-        <CompanioLogo
-          src={score.user.companio.logo_url}
-          alt={score.user.companio.name}
-        />
+        <CompanioInnerWrapper>
+          <CompanioLogo
+            src={score.user.companio.logo_url}
+            alt={score.user.companio.name}
+          />
+          {score.user.companio.name}
+        </CompanioInnerWrapper>
       </Cell>
     </ScoreRow>
   );
