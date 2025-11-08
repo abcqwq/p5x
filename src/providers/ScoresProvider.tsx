@@ -1,28 +1,27 @@
 'use client';
 import { createContext, useContext, useState } from 'react';
-import type { GetDeployablesV1 } from '@/network/schemas/deployable';
+import type { NightmareGatewayScores } from '@/schemas/nightmare-gateway';
 
-type DeployablesContextType = { deployables: GetDeployablesV1 };
+type ScoresContextType = { scores: NightmareGatewayScores };
 
-const DeployablesContext = createContext<DeployablesContextType>({
-  deployables: [] as GetDeployablesV1
+const ScoresContext = createContext<ScoresContextType>({
+  scores: []
 });
 
-export const useDeployables = () => {
-  return useContext(DeployablesContext);
+export const useScores = () => {
+  return useContext(ScoresContext);
 };
 
-export const DeployablesProvider = ({
-  children,
-  data
-}: {
+type ScoresProviderProps = {
   children: React.ReactNode;
-  data: GetDeployablesV1;
-}) => {
-  const [deployables] = useState(data);
+  data: NightmareGatewayScores;
+};
+
+export const ScoresProvider = ({ children, data }: ScoresProviderProps) => {
+  const [scores] = useState(data);
   return (
-    <DeployablesContext.Provider value={{ deployables }}>
+    <ScoresContext.Provider value={{ scores }}>
       {children}
-    </DeployablesContext.Provider>
+    </ScoresContext.Provider>
   );
 };
