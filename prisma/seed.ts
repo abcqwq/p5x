@@ -11,8 +11,7 @@ async function main() {
       data: {
         id: 'strega',
         name: 'Strega',
-        logo_url:
-          'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop&crop=center'
+        logo_url: 'https://i.redd.it/mhhhz5sjkyeb1.jpg'
       }
     }),
     prisma.companio.create({
@@ -20,7 +19,7 @@ async function main() {
         id: 'zoshigaya',
         name: 'Zoshigaya',
         logo_url:
-          'https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=200&h=200&fit=crop&crop=center'
+          'https://www.bikudesigns.com/uploads/4/0/2/2/402213/published/bikudesigns-blog-zoshigaya-japan-tokyo-travel-zelkova-pathway.jpg?1652154992'
       }
     })
   ]);

@@ -27,10 +27,19 @@ export const NightmareGatewayPeriodSchema = z.object({
   first_half_boss_name: z.string(),
   first_half_boss_avatar_url: z.string(),
   second_half_boss_name: z.string(),
-  second_half_boss_avatar_url: z.string(),
-  nightmare_gateway_scores: z.array(NightmareGatewayScoreSchema)
+  second_half_boss_avatar_url: z.string()
 });
 
-export type NightmareGatewayPeriodWithScores = z.infer<
+export type Companios = z.infer<typeof CompanioSchema>[];
+
+export type NightmareGatewayScores = z.infer<
+  typeof NightmareGatewayScoreSchema
+>[];
+
+export type NightmareGatewayPeriod = z.infer<
   typeof NightmareGatewayPeriodSchema
 >;
+
+export type NightmareGatewayPeriods = z.infer<
+  typeof NightmareGatewayPeriodSchema
+>[];
