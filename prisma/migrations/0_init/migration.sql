@@ -9,7 +9,7 @@ CREATE TABLE "companio" (
 
 -- CreateTable
 CREATE TABLE "user" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "avatar_url" TEXT NOT NULL,
     "companio_id" TEXT NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE "nightmare_gateway_period" (
 -- CreateTable
 CREATE TABLE "nightmare_gateway_score" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "user_id" UUID NOT NULL,
+    "user_id" TEXT NOT NULL,
     "nightmare_id" UUID NOT NULL,
     "first_half_score" INTEGER NOT NULL,
     "second_half_score" INTEGER NOT NULL,
