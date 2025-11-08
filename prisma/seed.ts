@@ -9,16 +9,16 @@ async function main() {
   const companies = await Promise.all([
     prisma.companio.create({
       data: {
-        id: 'tech-innovations',
-        name: 'Tech Innovations Corp',
+        id: 'strega',
+        name: 'Strega',
         logo_url:
           'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop&crop=center'
       }
     }),
     prisma.companio.create({
       data: {
-        id: 'digital-solutions',
-        name: 'Digital Solutions Ltd',
+        id: 'zoshigaya',
+        name: 'Zoshigaya',
         logo_url:
           'https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=200&h=200&fit=crop&crop=center'
       }
