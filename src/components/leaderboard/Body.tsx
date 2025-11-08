@@ -8,10 +8,13 @@ import { corben } from '@/fonts';
 import { formatDate } from '@/utils/date';
 
 const Container = styled.section`
-  display: flex;
-  flex-direction: column;
+  & > * {
+    margin-bottom: ${16 / 16}rem;
+  }
 
-  gap: ${16 / 16}rem;
+  & > *:last-child {
+    margin-bottom: 0;
+  }
 `;
 
 const PeriodSection = styled.section``;

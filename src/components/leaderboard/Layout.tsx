@@ -15,12 +15,16 @@ const OuterContainer = styled.div`
 `;
 
 const Container = styled.div`
-  width: ${BREAKPOINTS.tablet}px;
+  width: min(${BREAKPOINTS.tablet}px, 100%);
   margin-block-start: ${48 / 16}rem;
 
-  display: flex;
-  flex-direction: column;
-  gap: ${32 / 16}rem;
+  & > * {
+    margin-bottom: ${32 / 16}rem;
+  }
+
+  & > *:last-child {
+    margin-bottom: 0;
+  }
 `;
 
 const Layout = ({ children }: { children: React.ReactNode }) => {

@@ -32,6 +32,8 @@ export const NightmareGatewayPeriodSchema = z.object({
 
 export type Companios = z.infer<typeof CompanioSchema>[];
 
+export type NightmareGatewayScore = z.infer<typeof NightmareGatewayScoreSchema>;
+
 export type NightmareGatewayScores = z.infer<
   typeof NightmareGatewayScoreSchema
 >[];
