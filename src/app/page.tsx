@@ -22,8 +22,6 @@ const Page = async () => {
           <Layout>
             <Header />
             <Body />
-            {JSON.stringify(periods)}
-            {JSON.stringify(scores)}
           </Layout>
         </ScoresProvider>
       </CompaniosProvider>

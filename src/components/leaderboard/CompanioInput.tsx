@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Checkbox from '@/components/Checkbox';
 
 import { useCompanios } from '@/providers/CompaniosProvider';
+import { corben } from '@/fonts';
 
 const Container = styled.section`
   display: flex;
@@ -18,9 +19,8 @@ const CheckboxContainer = styled.div`
   gap: ${16 / 16}rem;
 `;
 
-const TitleSection = styled.div`
+const TitleSection = styled.h2`
   color: var(--color-text-2);
-  padding: 0 ${2 / 16}rem;
 `;
 
 const CompanioInput = () => {
@@ -29,7 +29,9 @@ const CompanioInput = () => {
 
   return (
     <Container>
-      <TitleSection>select companios</TitleSection>
+      <TitleSection className={corben.className}>
+        Included Companios
+      </TitleSection>
       <CheckboxContainer>
         {companios.map((companio) => (
           <Checkbox
