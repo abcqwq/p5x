@@ -2,6 +2,7 @@
 import styled from 'styled-components';
 
 import { useScores } from '@/providers/ScoresProvider';
+import { useCompanios } from '@/providers/CompaniosProvider';
 import { formatNumber } from '@/utils/number';
 import type { NightmareGatewayScore } from '@/schemas/nightmare-gateway';
 
@@ -104,6 +105,7 @@ const Score = (score: NightmareGatewayScore, rank: number) => {
 
 const Leaderboard = () => {
   const { scores } = useScores();
+  const { selectedCompanios } = useCompanios();
 
   return (
     <TableContainer>
@@ -114,7 +116,9 @@ const Leaderboard = () => {
           <Cell>Score</Cell>
           <Cell>Companio</Cell>
         </Row>
-        {scores.map((score, index) => Score(score, index + 1))}
+        {scores
+          .filter((score) => selectedCompanios.includes(score.user.companio.id))
+          .map((score, index) => Score(score, index + 1))}
       </InnerContainer>
     </TableContainer>
   );

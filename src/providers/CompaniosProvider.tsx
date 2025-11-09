@@ -31,16 +31,16 @@ export const CompaniosProvider = ({
 }: CompaniosProviderProps) => {
   const [companios] = useState(data);
   const [selectedCompanios, setSelectedCompanios] = useState<string[]>(
-    companios.map((c) => c.name)
+    companios.map((c) => c.id)
   );
 
-  const includeCompanio = (name: string) => {
-    if (selectedCompanios.includes(name)) return;
-    setSelectedCompanios((prev) => [...prev, name]);
+  const includeCompanio = (id: string) => {
+    if (selectedCompanios.includes(id)) return;
+    setSelectedCompanios((prev) => [...prev, id]);
   };
 
-  const excludeCompanio = (name: string) => {
-    setSelectedCompanios((prev) => prev.filter((n) => n !== name));
+  const excludeCompanio = (id: string) => {
+    setSelectedCompanios((prev) => prev.filter((n) => n !== id));
   };
 
   return (

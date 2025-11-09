@@ -37,10 +37,10 @@ const CompanioInput = () => {
           <Checkbox
             key={companio.id}
             name={companio.name}
-            checked={selectedCompanios.includes(companio.name)}
+            checked={selectedCompanios.includes(companio.id)}
             onChange={(checked) => {
-              if (checked) includeCompanio(companio.name);
-              else excludeCompanio(companio.name);
+              if (checked) includeCompanio(companio.id);
+              else excludeCompanio(companio.id);
             }}
           />
         ))}
