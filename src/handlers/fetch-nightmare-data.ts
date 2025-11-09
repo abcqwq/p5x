@@ -21,6 +21,7 @@ export async function fetchNightmareGatewayPeriod(): Promise<NightmareGatewayPer
 
 export async function fetchNightmareGatewayScores(): Promise<NightmareGatewayScores | null> {
   const scores = await prisma.nightmareGatewayScore.findMany({
+    orderBy: { first_half_score: 'desc' },
     include: {
       user: {
         include: {

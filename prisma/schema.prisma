@@ -61,5 +61,6 @@ model NightmareGatewayScore {
 
   @@index([user_id, nightmare_id])
   @@index([nightmare_id])
+  @@index([first_half_score(sort: Desc)])
   @@map("nightmare_gateway_score")
 }
