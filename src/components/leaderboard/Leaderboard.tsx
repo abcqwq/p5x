@@ -46,7 +46,6 @@ const Row = styled.div`
 
 const ScoreRow = styled(Row)`
   border-radius: ${8 / 16}rem;
-  background-color: var(--color-bg-2);
   width: 100%;
 `;
 
