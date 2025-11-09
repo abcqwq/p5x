@@ -89,6 +89,29 @@ export async function POST(req: Request) {
       return NextResponse.json({ type: 1 });
     }
 
+    // Check if the interaction is from a whitelisted server
+    const whitelistedServerIds =
+      process.env.DISCORD_WHITELISTED_SERVERS?.split(',') || [];
+
+    // Only check guild_id for application commands (not pings)
+    if (interaction.type === InteractionType.ApplicationCommand) {
+      const guildId = interaction.guild_id;
+
+      // If whitelist is configured and guild_id is not in the whitelist, reject
+      if (
+        whitelistedServerIds.length > 0 &&
+        !whitelistedServerIds.includes(guildId || '')
+      ) {
+        return NextResponse.json({
+          type: 4, // InteractionResponseType.ChannelMessageWithSource
+          data: {
+            content:
+              '❌ This bot is not available in this server. Contact the administrator to whitelist this server.'
+          }
+        });
+      }
+    }
+
     // get all commands
     const allCommands = await getCommands();
 
