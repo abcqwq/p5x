@@ -7,7 +7,7 @@ const Container = styled.h1``;
 const Header = () => {
   return (
     <Container className={corben.className}>
-      Nightmare's Gateway Ranking
+      Nightmare's Gateway Tracker
     </Container>
   );
 };
