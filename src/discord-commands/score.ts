@@ -12,6 +12,7 @@ export const register = new SlashCommandBuilder()
       .setDescription('Your score')
       .setRequired(true)
       .setMinValue(0)
+      .setMaxValue(Number.MAX_SAFE_INTEGER)
   );
 
 export const execute: executeCommand = async (interaction) => {
