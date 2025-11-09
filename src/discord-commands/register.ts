@@ -1,9 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import type { executeCommand } from '@/discord-helper/types';
-import { PrismaClient } from '@/generated/client';
+import { prisma } from '@/handlers/prisma';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
-
-const prisma = new PrismaClient();
 
 const companioMapper: Record<string, string> = {
   strega: 'Strega',
@@ -14,11 +12,11 @@ const companioMapper: Record<string, string> = {
 
 export const register = new SlashCommandBuilder()
   .setName('register')
-  .setDescription('Register yourself to the leaderboard')
+  .setDescription('Register yourself to the Alliance')
   .addStringOption((option) =>
     option
       .setName('display_name')
-      .setDescription('Your display name for the leaderboard')
+      .setDescription('Your P5X display name')
       .setRequired(true)
   )
   .addStringOption((option) =>
