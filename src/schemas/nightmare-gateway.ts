@@ -10,7 +10,7 @@ export const UserSchema = z.object({
   id: z.string(),
   name: z.string(),
   avatar_url: z.string(),
-  discord_user_id: z.string(),
+  discord_username: z.string(),
   companio: CompanioSchema
 });
 

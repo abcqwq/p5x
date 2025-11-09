@@ -40,7 +40,7 @@ export const execute: executeCommand = async (interaction) => {
     // Check if user is registered
     const user = await prisma.user.findUnique({
       where: {
-        discord_user_id: discordUserId
+        id: discordUserId
       }
     });
 
