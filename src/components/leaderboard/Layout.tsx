@@ -17,6 +17,7 @@ const OuterContainer = styled.div`
 const Container = styled.div`
   width: min(${BREAKPOINTS.tablet}px, 100%);
   margin-block-start: ${48 / 16}rem;
+  margin-block-end: ${48 / 16}rem;
 
   & > * {
     margin-bottom: ${32 / 16}rem;

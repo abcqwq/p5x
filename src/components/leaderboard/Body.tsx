@@ -2,6 +2,7 @@
 import styled from 'styled-components';
 import CompanioInput from '@/components/leaderboard/CompanioInput';
 import Leaderboard from '@/components/leaderboard/Leaderboard';
+import Help from '@/components/leaderboard/Help';
 
 import { usePeriods } from '@/providers/PeriodsProvider';
 import { corben } from '@/fonts';
@@ -42,6 +43,7 @@ const Body = () => {
 
       <CompanioInput />
 
+      <Help />
       <Leaderboard />
     </Container>
   );
