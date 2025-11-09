@@ -32,7 +32,7 @@ const Row = styled.div`
   & > * {
     flex: 1;
     flex-shrink: 0;
-    flex-basis: ${160 / 16}rem;
+    flex-basis: ${180 / 16}rem;
   }
 
   & > *:nth-child(1),
@@ -80,7 +80,9 @@ const Score = (score: NightmareGatewayScore, rank: number) => {
       <Cell>{rank}</Cell>
       <Cell>
         <UserInnerWrapper>
-          <Img src={score.user.avatar_url} alt={score.user.name} />
+          {score.user.avatar_url && (
+            <Img src={score.user.avatar_url} alt={score.user.name} />
+          )}
           {score.user.name}
         </UserInnerWrapper>
       </Cell>
