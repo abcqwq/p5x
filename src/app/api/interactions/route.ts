@@ -96,7 +96,7 @@ export async function POST(req: Request) {
     let reply: APIInteractionResponse | null = null;
     const commandName = interaction.data.name;
     if (allCommands[commandName]) {
-      reply = await allCommands[commandName](interaction);
+      reply = await allCommands[commandName].execute(interaction);
     }
 
     if (!reply) throw new Error();

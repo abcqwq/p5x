@@ -1,14 +1,13 @@
 import type { executeCommand } from './types';
+import * as pingCommand from '@/discord-commands/ping';
 
-const commandModules: Record<string, executeCommand> = {
-  ping: async (interaction) => {
-    return {
-      type: 4,
-      data: {
-        content: `pong! ${interaction.member?.user.username}`
-      }
-    };
-  }
+type CommandModule = {
+  register: typeof pingCommand.register;
+  execute: executeCommand;
+};
+
+const commandModules: Record<string, CommandModule> = {
+  ping: pingCommand
 };
 
 const getCommands = () => {
