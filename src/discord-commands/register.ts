@@ -67,7 +67,7 @@ export const execute: executeCommand = async (interaction) => {
     // Check if user is already registered
     const existingUser = await prisma.user.findUnique({
       where: {
-        discord_user_id: discordUserId
+        id: discordUserId
       }
     });
 
@@ -90,8 +90,8 @@ export const execute: executeCommand = async (interaction) => {
     // Create new user
     await prisma.user.create({
       data: {
-        id: interaction.member?.user.username || discordUserId,
-        discord_user_id: discordUserId,
+        id: discordUserId,
+        discord_username: interaction.member?.user.username || discordUserId,
         name: displayName,
         avatar_url: avatarUrl,
         companio_id: companioId

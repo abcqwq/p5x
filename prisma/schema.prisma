@@ -26,7 +26,7 @@ model Companio {
 
 model User {
   id                      String                   @id
-  discord_user_id         String                   @unique
+  discord_username        String                   @unique
   name                    String
   avatar_url              String
   companio_id             String
@@ -46,17 +46,20 @@ model NightmareGatewayPeriod {
   second_half_boss_avatar_url String
   nightmare_gateway_scores   NightmareGatewayScore[]
 
+  @@index([end(sort: Desc)])
   @@map("nightmare_gateway_period")
 }
 
 model NightmareGatewayScore {
   id                 String                  @id @default(uuid()) @db.Uuid
-  user_id            String                  @db.Uuid
+  user_id            String                  
   nightmare_id       String                  @db.Uuid
   first_half_score   Int
   second_half_score  Int
   user               User                    @relation(fields: [user_id], references: [id])
   nightmare_period   NightmareGatewayPeriod @relation(fields: [nightmare_id], references: [id])
 
+  @@index([user_id, nightmare_id])
+  @@index([nightmare_id])
   @@map("nightmare_gateway_score")
 }

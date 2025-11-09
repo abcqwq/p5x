@@ -10,7 +10,7 @@ CREATE TABLE "companio" (
 -- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL,
-    "discord_user_id" TEXT NOT NULL,
+    "discord_username" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "avatar_url" TEXT NOT NULL,
     "companio_id" TEXT NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE "user" (
 
 -- CreateTable
 CREATE TABLE "nightmare_gateway_period" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" UUID NOT NULL,
     "start" DATE NOT NULL,
     "end" DATE NOT NULL,
     "first_half_boss_name" TEXT NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE "nightmare_gateway_period" (
 
 -- CreateTable
 CREATE TABLE "nightmare_gateway_score" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" UUID NOT NULL,
     "user_id" TEXT NOT NULL,
     "nightmare_id" UUID NOT NULL,
     "first_half_score" INTEGER NOT NULL,
@@ -42,7 +42,17 @@ CREATE TABLE "nightmare_gateway_score" (
     CONSTRAINT "nightmare_gateway_score_pkey" PRIMARY KEY ("id")
 );
 
-CREATE UNIQUE INDEX "user_discord_user_id_key" ON "user"("discord_user_id");
+-- CreateIndex
+CREATE UNIQUE INDEX "user_discord_username_key" ON "user"("discord_username");
+
+-- CreateIndex
+CREATE INDEX "nightmare_gateway_period_end_idx" ON "nightmare_gateway_period"("end" DESC);
+
+-- CreateIndex
+CREATE INDEX "nightmare_gateway_score_user_id_nightmare_id_idx" ON "nightmare_gateway_score"("user_id", "nightmare_id");
+
+-- CreateIndex
+CREATE INDEX "nightmare_gateway_score_nightmare_id_idx" ON "nightmare_gateway_score"("nightmare_id");
 
 -- AddForeignKey
 ALTER TABLE "user" ADD CONSTRAINT "user_companio_id_fkey" FOREIGN KEY ("companio_id") REFERENCES "companio"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
