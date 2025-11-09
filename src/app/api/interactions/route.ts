@@ -119,39 +119,42 @@ export async function POST(req: Request) {
     let reply: APIInteractionResponse | null = null;
     const commandName = interaction.data.name;
     if (allCommands[commandName]) {
-      // Send immediate response with custom message
-      const initialResponse = NextResponse.json({
-        type: 4, // InteractionResponseType.ChannelMessageWithSource
-        data: {
-          content: 'Got your request, please wait!'
-        }
+      // Send deferred response (type 5) - tells Discord to show "Bot is thinking..."
+      const deferredResponse = NextResponse.json({
+        type: 5 // InteractionResponseType.DeferredChannelMessageWithSource
       });
 
-      // Execute the command asynchronously and edit the response
+      // Execute the command asynchronously and send the follow-up
       (async () => {
         try {
           reply = await allCommands[commandName].execute(interaction);
 
           if (reply && interaction.token) {
-            // Edit the original response via Discord API
-            const editUrl = `https://discord.com/api/v10/webhooks/${process.env.DISCORD_APP_ID}/${interaction.token}/messages/@original`;
+            // Send follow-up message via Discord webhook API
+            const webhookUrl = `https://discord.com/api/v10/webhooks/${process.env.DISCORD_APP_ID}/${interaction.token}`;
 
-            await fetch(editUrl, {
-              method: 'PATCH',
+            // Extract the data from the reply (which has type and data properties)
+            const messageData =
+              'data' in reply
+                ? reply.data
+                : { content: 'Command executed successfully' };
+
+            await fetch(webhookUrl, {
+              method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ ...reply })
+              body: JSON.stringify(messageData)
             });
           }
         } catch (error) {
           console.error('Error executing deferred command:', error);
-          // Edit the message with error info
+          // Send error follow-up message
           if (interaction.token) {
-            const editUrl = `https://discord.com/api/v10/webhooks/${process.env.DISCORD_APP_ID}/${interaction.token}/messages/@original`;
+            const webhookUrl = `https://discord.com/api/v10/webhooks/${process.env.DISCORD_APP_ID}/${interaction.token}`;
 
-            await fetch(editUrl, {
-              method: 'PATCH',
+            await fetch(webhookUrl, {
+              method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -164,7 +167,7 @@ export async function POST(req: Request) {
         }
       })();
 
-      return initialResponse;
+      return deferredResponse;
     }
 
     // test
