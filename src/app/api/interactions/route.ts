@@ -167,6 +167,7 @@ export async function POST(req: Request) {
       return initialResponse;
     }
 
+    // test
     throw new Error('Command not found');
   } catch (error) {
     console.log(error);
