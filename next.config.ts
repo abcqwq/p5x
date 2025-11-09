@@ -6,9 +6,6 @@ const nextConfig: NextConfig = {
   compiler: {
     styledComponents: true
   },
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client']
-  },
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.plugins = [...config.plugins, new PrismaPlugin()];

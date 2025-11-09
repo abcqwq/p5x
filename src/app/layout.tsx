@@ -9,7 +9,7 @@ import { ThemeProvider } from '@/providers/ThemeProvider';
 import { baseFont } from '@/fonts';
 
 export const metadata: Metadata = {
-  title: 'qwq next starter',
+  title: 'Strega Alliance P5X',
   description:
     'A starter template for Next.js with TypeScript, Styled-Components, and React Query.'
 };
