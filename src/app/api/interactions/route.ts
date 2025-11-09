@@ -119,59 +119,13 @@ export async function POST(req: Request) {
     let reply: APIInteractionResponse | null = null;
     const commandName = interaction.data.name;
     if (allCommands[commandName]) {
-      // Send deferred response (type 5) - tells Discord to show "Bot is thinking..."
-      const deferredResponse = NextResponse.json({
-        type: 5 // InteractionResponseType.DeferredChannelMessageWithSource
-      });
-
-      // Execute the command asynchronously and send the follow-up
-      (async () => {
-        try {
-          reply = await allCommands[commandName].execute(interaction);
-
-          if (reply && interaction.token) {
-            // Send follow-up message via Discord webhook API
-            const webhookUrl = `https://discord.com/api/v10/webhooks/${process.env.DISCORD_APP_ID}/${interaction.token}`;
-
-            // Extract the data from the reply (which has type and data properties)
-            const messageData =
-              'data' in reply
-                ? reply.data
-                : { content: 'Command executed successfully' };
-
-            await fetch(webhookUrl, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(messageData)
-            });
-          }
-        } catch (error) {
-          console.error('Error executing deferred command:', error);
-          // Send error follow-up message
-          if (interaction.token) {
-            const webhookUrl = `https://discord.com/api/v10/webhooks/${process.env.DISCORD_APP_ID}/${interaction.token}`;
-
-            await fetch(webhookUrl, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                content:
-                  'An error occurred while processing your command. Please try again later.'
-              })
-            });
-          }
-        }
-      })();
-
-      return deferredResponse;
+      reply = await allCommands[commandName].execute(interaction);
     }
 
-    // test
-    throw new Error('Command not found');
+    if (!reply) throw new Error();
+    return NextResponse.json({
+      ...reply
+    });
   } catch (error) {
     console.log(error);
     console.log('SOMETHING WENT WRONG');
