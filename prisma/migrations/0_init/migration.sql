@@ -10,6 +10,7 @@ CREATE TABLE "companio" (
 -- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL,
+    "discord_user_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "avatar_url" TEXT NOT NULL,
     "companio_id" TEXT NOT NULL,
@@ -40,6 +41,8 @@ CREATE TABLE "nightmare_gateway_score" (
 
     CONSTRAINT "nightmare_gateway_score_pkey" PRIMARY KEY ("id")
 );
+
+CREATE UNIQUE INDEX "user_discord_user_id_key" ON "user"("discord_user_id");
 
 -- AddForeignKey
 ALTER TABLE "user" ADD CONSTRAINT "user_companio_id_fkey" FOREIGN KEY ("companio_id") REFERENCES "companio"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

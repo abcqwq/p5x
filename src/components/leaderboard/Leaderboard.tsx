@@ -53,7 +53,12 @@ const Cell = styled.div`
   justify-content: flex-start;
 `;
 
-const CompanioLogo = styled.img`
+const Img = styled.img`
+  height: ${32 / 16}rem;
+  border-radius: 50%;
+`;
+
+const CompanioImg = styled.img`
   height: ${32 / 16}rem;
 `;
 
@@ -63,17 +68,28 @@ const CompanioInnerWrapper = styled.div`
   gap: ${8 / 16}rem;
 `;
 
+const UserInnerWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${8 / 16}rem;
+`;
+
 const Score = (score: NightmareGatewayScore, rank: number) => {
   return (
     <ScoreRow key={score.id}>
       <Cell>{rank}</Cell>
-      <Cell>{score.user.name}</Cell>
+      <Cell>
+        <UserInnerWrapper>
+          <Img src={score.user.avatar_url} alt={score.user.name} />
+          {score.user.name}
+        </UserInnerWrapper>
+      </Cell>
       <Cell>
         {formatNumber(score.first_half_score + score.second_half_score)}
       </Cell>
       <Cell>
         <CompanioInnerWrapper>
-          <CompanioLogo
+          <CompanioImg
             src={score.user.companio.logo_url}
             alt={score.user.companio.name}
           />

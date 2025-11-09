@@ -11,10 +11,23 @@ import {
   fetchCompanios
 } from '@/handlers/fetch-nightmare-data';
 
+import { fetchDiscordAvatars } from '@/handlers/fetch-discord-avatar';
+
 const Page = async () => {
-  const periods = await fetchNightmareGatewayPeriod();
-  const companios = await fetchCompanios();
-  const scores = await fetchNightmareGatewayScores();
+  const [periods, companios, scores] = await Promise.all([
+    fetchNightmareGatewayPeriod(),
+    fetchCompanios(),
+    fetchNightmareGatewayScores()
+  ]);
+
+  const avatars = await fetchDiscordAvatars(
+    scores ? scores.map((score) => score.user.discord_user_id) : []
+  );
+
+  scores?.forEach((score) => {
+    score.user.avatar_url = avatars.get(score.user.discord_user_id) || '';
+  });
+
   return (
     <PeriodsProvider data={periods || []}>
       <CompaniosProvider data={companios || []}>

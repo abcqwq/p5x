@@ -26,6 +26,7 @@ model Companio {
 
 model User {
   id                      String                   @id
+  discord_user_id         String                   @unique
   name                    String
   avatar_url              String
   companio_id             String
