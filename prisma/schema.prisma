@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl", "rhel-openssl-3.0.x"]
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Companio {
+  id       String @id
+  logo_url String
+  name     String
+  users    User[]
+
+  @@map("companio")
+}
+
+model User {
+  id                      String                   @id
+  discord_username        String                   @unique
+  name                    String
+  avatar_url              String
+  companio_id             String
+  companio                Companio                 @relation(fields: [companio_id], references: [id])
+  nightmare_gateway_scores NightmareGatewayScore[]
+
+  @@map("user")
+}
+
+model NightmareGatewayPeriod {
+  id                         String                   @id @default(uuid()) @db.Uuid
+  start                      DateTime                 @db.Date
+  end                        DateTime                 @db.Date
+  first_half_boss_name       String
+  first_half_boss_avatar_url String
+  second_half_boss_name      String
+  second_half_boss_avatar_url String
+  nightmare_gateway_scores   NightmareGatewayScore[]
+
+  @@index([end(sort: Desc)])
+  @@map("nightmare_gateway_period")
+}
+
+model NightmareGatewayScore {
+  id                 String                  @id @default(uuid()) @db.Uuid
+  user_id            String                  
+  nightmare_id       String                  @db.Uuid
+  first_half_score   Int
+  second_half_score  Int
+  user               User                    @relation(fields: [user_id], references: [id])
+  nightmare_period   NightmareGatewayPeriod @relation(fields: [nightmare_id], references: [id])
+
+  @@index([user_id, nightmare_id])
+  @@index([nightmare_id])
+  @@index([first_half_score(sort: Desc)])
+  @@map("nightmare_gateway_score")
+}
