@@ -10,8 +10,7 @@ import { baseFont } from '@/fonts';
 
 export const metadata: Metadata = {
   title: 'Strega Alliance P5X',
-  description:
-    'A starter template for Next.js with TypeScript, Styled-Components, and React Query.'
+  description: 'Nightmare Gateway data of Strega Alliance'
 };
 
 export default async function RootLayout({
