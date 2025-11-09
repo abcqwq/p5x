@@ -119,13 +119,55 @@ export async function POST(req: Request) {
     let reply: APIInteractionResponse | null = null;
     const commandName = interaction.data.name;
     if (allCommands[commandName]) {
-      reply = await allCommands[commandName].execute(interaction);
+      // Send immediate response with custom message
+      const initialResponse = NextResponse.json({
+        type: 4, // InteractionResponseType.ChannelMessageWithSource
+        data: {
+          content: 'Got your request, please wait!'
+        }
+      });
+
+      // Execute the command asynchronously and edit the response
+      (async () => {
+        try {
+          reply = await allCommands[commandName].execute(interaction);
+
+          if (reply && interaction.token) {
+            // Edit the original response via Discord API
+            const editUrl = `https://discord.com/api/v10/webhooks/${process.env.DISCORD_APP_ID}/${interaction.token}/messages/@original`;
+
+            await fetch(editUrl, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ ...reply })
+            });
+          }
+        } catch (error) {
+          console.error('Error executing deferred command:', error);
+          // Edit the message with error info
+          if (interaction.token) {
+            const editUrl = `https://discord.com/api/v10/webhooks/${process.env.DISCORD_APP_ID}/${interaction.token}/messages/@original`;
+
+            await fetch(editUrl, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                content:
+                  'An error occurred while processing your command. Please try again later.'
+              })
+            });
+          }
+        }
+      })();
+
+      return initialResponse;
     }
 
-    if (!reply) throw new Error();
-    return NextResponse.json({
-      ...reply
-    });
+    throw new Error('Command not found');
   } catch (error) {
     console.log(error);
     console.log('SOMETHING WENT WRONG');
