@@ -1,4 +1,4 @@
-import getCommands from '@/../discord-helper/get-commands';
+import getCommands from '@/discord-helper/get-commands';
 import { NextResponse } from 'next/server';
 
 import axios from 'axios';
@@ -23,10 +23,6 @@ export async function POST(req: Request) {
         { status: 401 }
       );
     }
-
-    console.log(
-      `hmm ${process.env.DISCORD_TOKEN} ${process.env.DISCORD_APP_ID}`
-    );
 
     const allCommands = await getCommands();
     const commands = Object.values(allCommands);
