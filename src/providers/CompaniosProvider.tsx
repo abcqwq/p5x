@@ -29,7 +29,7 @@ export const CompaniosProvider = ({
   children,
   data
 }: CompaniosProviderProps) => {
-  const [companios] = useState(data);
+  const [companios] = useState(data.sort((a, b) => a.id.localeCompare(b.id)));
   const [selectedCompanios, setSelectedCompanios] = useState<string[]>(
     companios.map((c) => c.id)
   );
