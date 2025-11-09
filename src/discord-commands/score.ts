@@ -124,7 +124,7 @@ export const execute: executeCommand = async (interaction) => {
       return {
         type: 4,
         data: {
-          content: `Successfully recorded your first half score of **${scoreValue.toLocaleString()}** for ${latestPeriod.first_half_boss_name}!`
+          content: `Successfully recorded your score of **${scoreValue.toLocaleString()}**!`
         }
       };
     }

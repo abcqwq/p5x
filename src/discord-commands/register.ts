@@ -80,9 +80,11 @@ export const execute: executeCommand = async (interaction) => {
       };
     }
 
-    // Get user's Discord avatar URL
+    const extension = interaction.member?.user.avatar?.startsWith('a_')
+      ? 'gif'
+      : 'png';
     const avatarUrl = interaction.member?.user.avatar
-      ? `https://cdn.discordapp.com/avatars/${discordUserId}/${interaction.member.user.avatar}.png`
+      ? `https://cdn.discordapp.com/avatars/${discordUserId}/${interaction.member.user.avatar}.${extension}`
       : `https://cdn.discordapp.com/embed/avatars/${parseInt(discordUserId) % 5}.png`;
 
     // Create new user
