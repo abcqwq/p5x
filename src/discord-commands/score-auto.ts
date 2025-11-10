@@ -2,6 +2,9 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import type { executeCommand } from '@/discord-helper/types';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
 import { extractTextFromImage } from '@/handlers/process-score';
+import { parseScoreData } from '@/utils/parse-score-data';
+import { processScoreUpdates } from '@/handlers/update-scores';
+import { prisma } from '@/handlers/prisma';
 
 export const register = new SlashCommandBuilder()
   .setName('score-auto')
@@ -39,7 +42,8 @@ async function processMessage(
   channelId: string,
   messageId: string,
   applicationId: string,
-  interactionToken: string
+  interactionToken: string,
+  nightmareId: string
 ) {
   try {
     const botToken = process.env.DISCORD_TOKEN;
@@ -85,20 +89,85 @@ async function processMessage(
       return;
     }
 
+    // Extract text from all images
     const extractedTexts: string[] = [];
     for (const imageUrl of imageUrls) {
-      extractedTexts.push(
-        await extractTextFromImage(
-          imageUrl,
-          process.env.GOOGLE_GEMINI_API_KEY || ''
-        )
+      const text = await extractTextFromImage(
+        imageUrl,
+        process.env.GOOGLE_GEMINI_API_KEY || ''
+      );
+      extractedTexts.push(text);
+    }
+
+    // Combine all extracted texts
+    const combinedText = extractedTexts.join('\n');
+
+    // Parse the extracted text
+    const { validScores, duplicateDisplayNames, invalidEntries } =
+      parseScoreData(combinedText);
+
+    // Process valid scores against the database
+    const processResult = await processScoreUpdates(validScores, nightmareId);
+
+    // Build comprehensive follow-up message
+    const messageParts: string[] = [];
+    messageParts.push(`Processed ${imageUrls.length} image(s)\n`);
+
+    // Successful updates
+    if (processResult.successful.length > 0) {
+      messageParts.push(
+        `**Successfully updated (${processResult.successful.length}):**`
+      );
+      messageParts.push(
+        processResult.successful
+          .map((s) => `  • ${s.displayName}: ${s.score.toLocaleString()}`)
+          .join('\n')
+      );
+      messageParts.push('');
+    }
+
+    // Duplicate display names
+    if (duplicateDisplayNames.length > 0) {
+      messageParts.push(
+        `**Duplicate Display Names (${duplicateDisplayNames.length}):**`
+      );
+      messageParts.push(
+        duplicateDisplayNames.map((name) => `  • ${name}`).join('\n')
+      );
+      messageParts.push('');
+    }
+
+    // Multiple user matches
+    if (processResult.multipleMatches.length > 0) {
+      messageParts.push(
+        `**Display Names used by multiple users (${processResult.multipleMatches.length}):**`
+      );
+      messageParts.push(
+        processResult.multipleMatches.map((name) => `  • ${name}`).join('\n')
+      );
+      messageParts.push('');
+    }
+
+    // No user matches
+    if (processResult.noMatches.length > 0) {
+      messageParts.push(
+        `**No User Found (${processResult.noMatches.length}):**`
+      );
+      messageParts.push(
+        processResult.noMatches.map((name) => `  • ${name}`).join('\n')
+      );
+      messageParts.push('');
+    }
+
+    // Invalid entries
+    if (invalidEntries.length > 0) {
+      messageParts.push(`**Invalid Data (${invalidEntries.length}):**`);
+      messageParts.push(
+        invalidEntries.map((entry) => `  • ${entry}`).join('\n')
       );
     }
 
-    // Build follow-up message with image URLs
-    const followUpContent =
-      `Found ${imageUrls.length} image(s) in message ID: ${messageId}\n\n` +
-      extractedTexts.join('\n\n');
+    const followUpContent = messageParts.join('\n');
 
     await sendFollowUpMessage(applicationId, interactionToken, followUpContent);
   } catch (error) {
@@ -132,12 +201,43 @@ export const execute: executeCommand = async (interaction) => {
     };
   }
 
+  // Fetch the latest nightmare gateway period
+  const latestPeriod = await prisma.nightmareGatewayPeriod.findFirst({
+    orderBy: {
+      end: 'desc'
+    }
+  });
+
+  if (!latestPeriod) {
+    return {
+      type: 4,
+      data: {
+        content:
+          'No active Nightmare Gateway period found. Please contact an administrator.'
+      }
+    };
+  }
+
+  // Check if the period has not ended yet
+  const now = new Date();
+  const periodEnd = new Date(latestPeriod.end);
+
+  if (periodEnd < now) {
+    return {
+      type: 4,
+      data: {
+        content: `The current Nightmare Gateway period has ended. Please wait for the next period to start.`
+      }
+    };
+  }
+
   // Start processing asynchronously
   processMessage(
     interaction.channel_id,
     messageId,
     interaction.application_id,
-    interaction.token
+    interaction.token,
+    latestPeriod.id
   ).catch((error) => {
     console.error('Unhandled error in processMessage:', error);
   });

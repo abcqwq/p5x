@@ -30,7 +30,7 @@ export async function extractTextFromImage(
 
     // Prepare the prompt
     const prompt =
-      'Extract out text from this image in this format: player_name,score like in CSV';
+      'Extract out display name and score from this image in this format: player_name,score like in CSV. Do note that some score could have its number in new line';
 
     // Generate content with the image
     const result = await model.generateContent([
