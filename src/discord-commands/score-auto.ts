@@ -95,11 +95,39 @@ async function processMessage(
       const imageNumber = i + 1;
 
       try {
-        // Extract text from the current image
-        const extractedText = await extractTextFromImage(
-          imageUrl,
-          process.env.GOOGLE_GEMINI_API_KEY || ''
-        );
+        // Extract text from the current image with retry logic (up to 3 attempts)
+        let extractedText = '';
+        const maxAttempts = 3;
+
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+          try {
+            extractedText = await extractTextFromImage(
+              imageUrl,
+              process.env.GOOGLE_GEMINI_API_KEY || ''
+            );
+            break; // Success, exit the retry loop
+          } catch (error) {
+            console.error(
+              `Error extracting text from image ${imageNumber} (attempt ${attempt}/${maxAttempts}):`,
+              error
+            );
+
+            if (attempt < maxAttempts) {
+              // Notify user about the failure and retry
+              await sendFollowUpMessage(
+                applicationId,
+                interactionToken,
+                `**Image ${imageNumber}/${imageUrls.length}**: Failed to extract text (attempt ${attempt}/${maxAttempts}). Retrying in 20 seconds...`
+              );
+
+              // Wait 20 seconds before retrying
+              await new Promise((resolve) => setTimeout(resolve, 20000));
+            } else {
+              // All attempts failed
+              throw error;
+            }
+          }
+        }
 
         // Parse the extracted text
         const { validScores, duplicateDisplayNames, invalidEntries } =
