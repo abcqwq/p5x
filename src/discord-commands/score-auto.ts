@@ -226,6 +226,20 @@ async function processMessage(
 }
 
 export const execute: executeCommand = async (interaction) => {
+  // Check if user is a whitelisted super admin
+  const executorId = interaction.member?.user.id;
+  const whitelistedAdmins =
+    process.env.WHITELISTED_SUPER_ADMIN?.split(',') || [];
+
+  if (!executorId || !whitelistedAdmins.includes(executorId)) {
+    return {
+      type: 4,
+      data: {
+        content: 'You do not have permission to use this command.'
+      }
+    };
+  }
+
   const data =
     interaction.data as APIChatInputApplicationCommandInteractionData;
 
