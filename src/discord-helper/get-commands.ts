@@ -20,8 +20,8 @@ const commandModules: Record<string, CommandModule> = {
   ping: pingCommand,
   register: registerCommand,
   score: scoreCommand,
-  scoreMember: scoreMemberCommand,
-  registerMember: registerMemberCommand
+  'score-member': scoreMemberCommand,
+  'register-member': registerMemberCommand
 };
 
 const getCommands = () => {
