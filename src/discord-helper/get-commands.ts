@@ -5,6 +5,7 @@ import * as registerCommand from '@/discord-commands/register';
 import * as scoreCommand from '@/discord-commands/score';
 import * as scoreMemberCommand from '@/discord-commands/score-member';
 import * as registerMemberCommand from '@/discord-commands/register-member';
+import * as scoreAutoCommand from '@/discord-commands/score-auto';
 
 type CommandModule = {
   register:
@@ -12,7 +13,8 @@ type CommandModule = {
     | typeof registerCommand.register
     | typeof scoreCommand.register
     | typeof scoreMemberCommand.register
-    | typeof registerMemberCommand.register;
+    | typeof registerMemberCommand.register
+    | typeof scoreAutoCommand.register;
   execute: executeCommand;
 };
 
@@ -21,7 +23,8 @@ const commandModules: Record<string, CommandModule> = {
   register: registerCommand,
   score: scoreCommand,
   'score-member': scoreMemberCommand,
-  'register-member': registerMemberCommand
+  'register-member': registerMemberCommand,
+  'score-auto': scoreAutoCommand
 };
 
 const getCommands = () => {

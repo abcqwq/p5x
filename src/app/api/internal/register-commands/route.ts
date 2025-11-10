@@ -7,9 +7,7 @@ const request = axios.create({
   baseURL: 'https://discord.com',
   timeout: 3000,
   headers: {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-    'Access-Control-Allow-Headers': 'Authorization',
+    'Content-Type': 'application/json',
     Authorization: `Bot ${process.env.DISCORD_TOKEN}`
   }
 });
@@ -27,8 +25,6 @@ export async function POST(req: Request) {
     const allCommands = await getCommands();
     const commands = Object.values(allCommands);
     const commandsJSON = commands.map((command) => command.register.toJSON());
-
-    console.log(`hmm ${JSON.stringify(commandsJSON)}`);
 
     const registerCommands = await request.put(
       `/api/applications/${process.env.DISCORD_APP_ID}/commands`,
