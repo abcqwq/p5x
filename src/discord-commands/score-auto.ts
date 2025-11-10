@@ -89,87 +89,104 @@ async function processMessage(
       return;
     }
 
-    // Extract text from all images
-    const extractedTexts: string[] = [];
-    for (const imageUrl of imageUrls) {
-      const text = await extractTextFromImage(
-        imageUrl,
-        process.env.GOOGLE_GEMINI_API_KEY || ''
-      );
-      extractedTexts.push(text);
+    // Process each image individually
+    for (let i = 0; i < imageUrls.length; i++) {
+      const imageUrl = imageUrls[i];
+      const imageNumber = i + 1;
+
+      try {
+        // Extract text from the current image
+        const extractedText = await extractTextFromImage(
+          imageUrl,
+          process.env.GOOGLE_GEMINI_API_KEY || ''
+        );
+
+        // Parse the extracted text
+        const { validScores, duplicateDisplayNames, invalidEntries } =
+          parseScoreData(extractedText);
+
+        // Process valid scores against the database
+        const processResult = await processScoreUpdates(
+          validScores,
+          nightmareId
+        );
+
+        // Build follow-up message for this image
+        const messageParts: string[] = [];
+        messageParts.push(`**Image ${imageNumber}/${imageUrls.length}**\n`);
+
+        // Successful updates
+        if (processResult.successful.length > 0) {
+          messageParts.push(
+            `**Successfully updated (${processResult.successful.length}):**`
+          );
+          messageParts.push(
+            processResult.successful
+              .map((s) => `  • ${s.displayName}: ${s.score.toLocaleString()}`)
+              .join('\n')
+          );
+          messageParts.push('');
+        }
+
+        // Duplicate display names
+        if (duplicateDisplayNames.length > 0) {
+          messageParts.push(
+            `**Duplicate Display Names (${duplicateDisplayNames.length}):**`
+          );
+          messageParts.push(
+            duplicateDisplayNames.map((name) => `  • ${name}`).join('\n')
+          );
+          messageParts.push('');
+        }
+
+        // Multiple user matches
+        if (processResult.multipleMatches.length > 0) {
+          messageParts.push(
+            `**Display Names used by multiple users (${processResult.multipleMatches.length}):**`
+          );
+          messageParts.push(
+            processResult.multipleMatches
+              .map((name) => `  • ${name}`)
+              .join('\n')
+          );
+          messageParts.push('');
+        }
+
+        // No user matches
+        if (processResult.noMatches.length > 0) {
+          messageParts.push(
+            `**No User Found (${processResult.noMatches.length}):**`
+          );
+          messageParts.push(
+            processResult.noMatches.map((name) => `  • ${name}`).join('\n')
+          );
+          messageParts.push('');
+        }
+
+        // Invalid entries
+        if (invalidEntries.length > 0) {
+          messageParts.push(`**Invalid Data (${invalidEntries.length}):**`);
+          messageParts.push(
+            invalidEntries.map((entry) => `  • ${entry}`).join('\n')
+          );
+        }
+
+        const followUpContent = messageParts.join('\n');
+
+        await sendFollowUpMessage(
+          applicationId,
+          interactionToken,
+          followUpContent
+        );
+      } catch (error) {
+        console.error(`Error processing image ${imageNumber}:`, error);
+        await sendFollowUpMessage(
+          applicationId,
+          interactionToken,
+          `**Image ${imageNumber}/${imageUrls.length}**: Failed to process this image.`
+        );
+      }
     }
-
-    // Combine all extracted texts
-    const combinedText = extractedTexts.join('\n');
-
-    // Parse the extracted text
-    const { validScores, duplicateDisplayNames, invalidEntries } =
-      parseScoreData(combinedText);
-
-    // Process valid scores against the database
-    const processResult = await processScoreUpdates(validScores, nightmareId);
-
-    // Build comprehensive follow-up message
-    const messageParts: string[] = [];
-    messageParts.push(`Processed ${imageUrls.length} image(s)\n`);
-
-    // Successful updates
-    if (processResult.successful.length > 0) {
-      messageParts.push(
-        `**Successfully updated (${processResult.successful.length}):**`
-      );
-      messageParts.push(
-        processResult.successful
-          .map((s) => `  • ${s.displayName}: ${s.score.toLocaleString()}`)
-          .join('\n')
-      );
-      messageParts.push('');
-    }
-
-    // Duplicate display names
-    if (duplicateDisplayNames.length > 0) {
-      messageParts.push(
-        `**Duplicate Display Names (${duplicateDisplayNames.length}):**`
-      );
-      messageParts.push(
-        duplicateDisplayNames.map((name) => `  • ${name}`).join('\n')
-      );
-      messageParts.push('');
-    }
-
-    // Multiple user matches
-    if (processResult.multipleMatches.length > 0) {
-      messageParts.push(
-        `**Display Names used by multiple users (${processResult.multipleMatches.length}):**`
-      );
-      messageParts.push(
-        processResult.multipleMatches.map((name) => `  • ${name}`).join('\n')
-      );
-      messageParts.push('');
-    }
-
-    // No user matches
-    if (processResult.noMatches.length > 0) {
-      messageParts.push(
-        `**No User Found (${processResult.noMatches.length}):**`
-      );
-      messageParts.push(
-        processResult.noMatches.map((name) => `  • ${name}`).join('\n')
-      );
-      messageParts.push('');
-    }
-
-    // Invalid entries
-    if (invalidEntries.length > 0) {
-      messageParts.push(`**Invalid Data (${invalidEntries.length}):**`);
-      messageParts.push(
-        invalidEntries.map((entry) => `  • ${entry}`).join('\n')
-      );
-    }
-
-    const followUpContent = messageParts.join('\n');
-
-    await sendFollowUpMessage(applicationId, interactionToken, followUpContent);
   } catch (error) {
     console.error('Error processing message:', error);
     await sendFollowUpMessage(
