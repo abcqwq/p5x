@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import type { executeCommand } from '@/discord-helper/types';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
+import { extractTextFromImage } from '@/handlers/process-score';
 
 export const register = new SlashCommandBuilder()
   .setName('score-auto')
@@ -84,12 +85,20 @@ async function processMessage(
       return;
     }
 
+    const extractedTexts: string[] = [];
+    for (const imageUrl of imageUrls) {
+      extractedTexts.push(
+        await extractTextFromImage(
+          imageUrl,
+          process.env.GOOGLE_GEMINI_API_KEY || ''
+        )
+      );
+    }
+
     // Build follow-up message with image URLs
     const followUpContent =
       `Found ${imageUrls.length} image(s) in message ID: ${messageId}\n\n` +
-      imageUrls
-        .map((url: string, index: number) => `**Image ${index + 1}:** ${url}`)
-        .join('\n');
+      extractedTexts.join('\n\n');
 
     await sendFollowUpMessage(applicationId, interactionToken, followUpContent);
   } catch (error) {
