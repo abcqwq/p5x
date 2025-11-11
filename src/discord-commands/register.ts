@@ -72,10 +72,12 @@ export const execute: executeCommand = async (interaction) => {
     });
 
     if (existingUser) {
+      const companioName =
+        companioMapper[existingUser.companio_id] || 'Unknown';
       return {
         type: 4,
         data: {
-          content: `You're already registered as **${existingUser.name}**! If you need to update your information, please contact an administrator.`
+          content: `You're already registered as **${existingUser.name}** in companio **${companioName}**! If you need to update your information, please contact an administrator.`
         }
       };
     }
