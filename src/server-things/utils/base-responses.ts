@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { InteractionResponseType } from 'discord-api-types/v10';
 
 export const unauthorized = () => {
   return NextResponse.json(
@@ -16,4 +17,8 @@ export const internalServerError = () => {
     { message: 'Internal Server Error', success: false },
     { status: 500 }
   );
+};
+
+export const pong = () => {
+  return NextResponse.json({ type: InteractionResponseType.Pong });
 };
