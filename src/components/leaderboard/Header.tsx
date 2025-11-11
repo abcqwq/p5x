@@ -1,6 +1,6 @@
 'use client';
 import styled from 'styled-components';
-import { corben } from '@/fonts';
+import { corben } from '@/react-things/fonts';
 
 const Container = styled.h1``;
 

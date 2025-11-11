@@ -4,9 +4,9 @@ import CompanioInput from '@/components/leaderboard/CompanioInput';
 import Leaderboard from '@/components/leaderboard/Leaderboard';
 import Help from '@/components/leaderboard/Help';
 
-import { usePeriods } from '@/providers/PeriodsProvider';
-import { corben } from '@/fonts';
-import { formatDate } from '@/utils/date';
+import { usePeriods } from '@/react-things/providers/PeriodsProvider';
+import { corben } from '@/react-things/fonts';
+import { formatDate } from '@/react-things/utils/date';
 
 const Container = styled.section`
   & > * {

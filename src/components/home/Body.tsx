@@ -6,7 +6,7 @@ import Button from '@/components/Button';
 import ProfileCard from '@/components/ProfileCard';
 import Link from '@/components/Link';
 
-import { useTheme } from '@/providers/ThemeProvider';
+import { useTheme } from '@/react-things/providers/ThemeProvider';
 
 const Container = styled.section`
   display: flex;

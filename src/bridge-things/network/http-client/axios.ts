@@ -2,7 +2,7 @@ import axios, { type AxiosInstance } from 'axios';
 import {
   type ClientConfig,
   DefaultConfig
-} from '@/network/http-client/client-config';
+} from '@/bridge-things/network/http-client/client-config';
 
 const constructClient = (config: ClientConfig): AxiosInstance => {
   const client = axios.create({

@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { LIGHT_COLORS, DARK_COLORS } from '@/consts/COLORS';
+import { LIGHT_COLORS, DARK_COLORS } from '@/react-things/consts/COLORS';
 
 export const getThemePreference = async (): Promise<
   [theme: string, colors: object]

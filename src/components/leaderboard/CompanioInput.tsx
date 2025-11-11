@@ -2,8 +2,8 @@
 import styled from 'styled-components';
 import Checkbox from '@/components/Checkbox';
 
-import { useCompanios } from '@/providers/CompaniosProvider';
-import { corben } from '@/fonts';
+import { useCompanios } from '@/react-things/providers/CompaniosProvider';
+import { corben } from '@/react-things/fonts';
 
 const Container = styled.section`
   display: flex;

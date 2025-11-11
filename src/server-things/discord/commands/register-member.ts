@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import type { executeCommand } from '@/discord-helper/types';
+import type { executeCommand } from '@/server-things/discord/types';
 import { prisma } from '@/handlers/prisma';
 import type {
   APIChatInputApplicationCommandInteractionData,
@@ -19,22 +19,25 @@ const WHITELISTED_ADMIN_IDS = new Set<string>(
 );
 
 export const register = new SlashCommandBuilder()
-  .setName('edit-member')
-  .setDescription('Edit another member in the Alliance (Admin only)')
+  .setName('register-member')
+  .setDescription('Register another member to the Alliance (Admin only)')
   .addUserOption((option) =>
-    option.setName('user').setDescription('The user to edit').setRequired(true)
+    option
+      .setName('user')
+      .setDescription('The user to register')
+      .setRequired(true)
   )
   .addStringOption((option) =>
     option
       .setName('display_name')
       .setDescription('Their P5X display name')
-      .setRequired(false)
+      .setRequired(true)
   )
   .addStringOption((option) =>
     option
       .setName('companio')
       .setDescription('Their companio')
-      .setRequired(false)
+      .setRequired(true)
       .addChoices(
         { name: 'Strega', value: 'strega' },
         { name: 'Zoshigaya', value: 'zoshigaya' },
@@ -68,6 +71,15 @@ export const execute: executeCommand = async (interaction) => {
 
   const targetUserId =
     userOption && 'value' in userOption ? String(userOption.value) : '';
+  const displayName =
+    displayNameOption && 'value' in displayNameOption
+      ? String(displayNameOption.value)
+      : 'Nagisa Kamisiro';
+  const companioId =
+    companioOption && 'value' in companioOption
+      ? String(companioOption.value)
+      : 'strega';
+
   if (!targetUserId) {
     return {
       type: 4,
@@ -76,15 +88,6 @@ export const execute: executeCommand = async (interaction) => {
       }
     };
   }
-
-  const displayName =
-    displayNameOption && 'value' in displayNameOption
-      ? String(displayNameOption.value)
-      : '';
-  const companioId =
-    companioOption && 'value' in companioOption
-      ? String(companioOption.value)
-      : '';
 
   // Get the target user's information from the resolved data
   const resolvedData = (
@@ -109,56 +112,48 @@ export const execute: executeCommand = async (interaction) => {
       }
     });
 
-    if (!existingUser) {
+    if (existingUser) {
+      const companioName =
+        companioMapper[existingUser.companio_id] || 'Unknown';
       return {
         type: 4,
         data: {
-          content:
-            'The user has not been registered yet. Please register them first.'
+          content: `<@${targetUserId}> is already registered as **${existingUser.name}** in companio **${companioName}**! If you need to update their information, please contact an administrator.`
         }
       };
     }
 
-    // Build update data - only include fields that are not empty
-    const updateData: { name?: string; companio_id?: string } = {};
-    if (displayName) {
-      updateData.name = displayName;
-    }
-    if (companioId) {
-      updateData.companio_id = companioId;
-    }
+    const extension = targetUser.avatar?.startsWith('a_') ? 'gif' : 'png';
+    const avatarUrl = targetUser.avatar
+      ? `https://cdn.discordapp.com/avatars/${targetUserId}/${targetUser.avatar}.${extension}`
+      : `https://cdn.discordapp.com/embed/avatars/${parseInt(targetUserId) % 5}.png`;
 
-    // Update user with non-empty fields
-    const updatedUser = await prisma.user.update({
-      where: {
-        id: targetUserId
-      },
-      data: updateData
+    // Create new user
+    await prisma.user.create({
+      data: {
+        id: targetUserId,
+        discord_username: targetUser.username || targetUserId,
+        name: displayName,
+        avatar_url: avatarUrl,
+        companio_id: companioId
+      }
     });
 
-    // Build response message showing what was updated
-    let responseMessage = `Successfully updated <@${targetUserId}>!`;
-    if (updatedUser.name) {
-      responseMessage += `\n**Display Name:** ${updatedUser.name}`;
-    }
-    if (updatedUser.companio_id) {
-      const companioName = companioMapper[updatedUser.companio_id] || 'Unknown';
-      responseMessage += `\n**Companio:** ${companioName}`;
-    }
+    const companioName = companioMapper[companioId] || 'Unknown';
 
     return {
       type: 4,
       data: {
-        content: responseMessage
+        content: `Successfully registered <@${targetUserId}>!\n**Display Name:** ${displayName}\n**Companio:** ${companioName}`
       }
     };
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error('Error registering user:', error);
     return {
       type: 4,
       data: {
         content:
-          'An error occurred while updating. Please try again later or contact an administrator.'
+          'An error occurred while registering. Please try again later or contact an administrator.'
       }
     };
   }

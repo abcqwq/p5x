@@ -6,7 +6,7 @@ import {
   NightmareGatewayPeriodSchema,
   NightmareGatewayScoreSchema,
   CompanioSchema
-} from '@/schemas/nightmare-gateway';
+} from '@/bridge-things/schemas/nightmare-gateway';
 
 export async function fetchNightmareGatewayPeriod(): Promise<NightmareGatewayPeriods | null> {
   const periods = await prisma.nightmareGatewayPeriod.findMany({

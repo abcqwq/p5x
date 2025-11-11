@@ -2,9 +2,9 @@ import Layout from '@/components/leaderboard/Layout';
 import Header from '@/components/leaderboard/Header';
 import Body from '@/components/leaderboard/Body';
 
-import { ScoresProvider } from '@/providers/ScoresProvider';
-import { PeriodsProvider } from '@/providers/PeriodsProvider';
-import { CompaniosProvider } from '@/providers/CompaniosProvider';
+import { ScoresProvider } from '@/react-things/providers/ScoresProvider';
+import { PeriodsProvider } from '@/react-things/providers/PeriodsProvider';
+import { CompaniosProvider } from '@/react-things/providers/CompaniosProvider';
 import {
   fetchNightmareGatewayPeriod,
   fetchNightmareGatewayScores,

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import type { executeCommand } from '@/discord-helper/types';
+import type { executeCommand } from '@/server-things/discord/types';
 import { prisma } from '@/handlers/prisma';
 import type {
   APIChatInputApplicationCommandInteractionData,

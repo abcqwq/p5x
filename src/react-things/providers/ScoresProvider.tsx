@@ -1,6 +1,6 @@
 'use client';
 import { createContext, useContext, useState } from 'react';
-import type { NightmareGatewayScores } from '@/schemas/nightmare-gateway';
+import type { NightmareGatewayScores } from '@/bridge-things/schemas/nightmare-gateway';
 
 type ScoresContextType = { scores: NightmareGatewayScores };
 

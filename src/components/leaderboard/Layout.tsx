@@ -1,6 +1,6 @@
 'use client';
 import styled from 'styled-components';
-import { BREAKPOINTS } from '@/consts/BREAKPOINTS';
+import { BREAKPOINTS } from '@/react-things/consts/BREAKPOINTS';
 
 const OuterContainer = styled.div`
   min-height: 100vh;

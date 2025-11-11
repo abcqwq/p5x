@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import '@/app/globals.css';
 
-import StyledComponentsRegistry from '@/styled-components/registry';
-import QueryProvider from '@/providers/QueryProvider';
+import StyledComponentsRegistry from '@/react-things/styled-components/registry';
+import QueryProvider from '@/react-things/providers/QueryProvider';
 
-import { getThemePreference } from '@/utils/theme';
-import { ThemeProvider } from '@/providers/ThemeProvider';
-import { baseFont } from '@/fonts';
+import { getThemePreference } from '@/react-things/utils/theme';
+import { ThemeProvider } from '@/react-things/providers/ThemeProvider';
+import { baseFont } from '@/react-things/fonts';
 
 export const metadata: Metadata = {
   title: 'Strega Alliance P5X',

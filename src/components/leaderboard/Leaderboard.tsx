@@ -1,10 +1,10 @@
 'use client';
 import styled from 'styled-components';
 
-import { useScores } from '@/providers/ScoresProvider';
-import { useCompanios } from '@/providers/CompaniosProvider';
-import { formatNumber } from '@/utils/number';
-import type { NightmareGatewayScore } from '@/schemas/nightmare-gateway';
+import { useScores } from '@/react-things/providers/ScoresProvider';
+import { useCompanios } from '@/react-things/providers/CompaniosProvider';
+import { formatNumber } from '@/react-things/utils/number';
+import type { NightmareGatewayScore } from '@/bridge-things/schemas/nightmare-gateway';
 
 const TableContainer = styled.div`
   overflow-x: auto;

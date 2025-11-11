@@ -7,7 +7,7 @@ import {
 import { NextResponse } from 'next/server';
 
 import nacl from 'tweetnacl';
-import getCommands from '@/discord-helper/get-commands';
+import getCommands from '@/server-things/discord/get-commands';
 
 type VerifyWithNaclArgs = {
   appPublicKey: string;

@@ -2,7 +2,7 @@
 import styled from 'styled-components';
 import Dropdown from '@/components/Dropdown';
 
-import { usePeriods } from '@/providers/PeriodsProvider';
+import { usePeriods } from '@/react-things/providers/PeriodsProvider';
 
 const Container = styled.section`
   display: flex;

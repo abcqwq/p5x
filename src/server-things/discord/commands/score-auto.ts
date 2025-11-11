@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import type { executeCommand } from '@/discord-helper/types';
+import type { executeCommand } from '@/server-things/discord/types';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
 import { extractTextFromImage } from '@/handlers/process-score';
 import { parseScoreData } from '@/utils/parse-score-data';

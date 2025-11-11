@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from 'react';
 import type {
   NightmareGatewayPeriods,
   NightmareGatewayPeriod
-} from '@/schemas/nightmare-gateway';
+} from '@/bridge-things/schemas/nightmare-gateway';
 
 type PeriodsContextType = {
   periods: NightmareGatewayPeriods;

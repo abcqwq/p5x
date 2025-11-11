@@ -2,7 +2,7 @@
 import React, { useContext } from 'react';
 import Cookie from 'js-cookie';
 
-import { LIGHT_COLORS, DARK_COLORS } from '@/consts/COLORS';
+import { LIGHT_COLORS, DARK_COLORS } from '@/react-things/consts/COLORS';
 
 type Props = {
   initialTheme: string;

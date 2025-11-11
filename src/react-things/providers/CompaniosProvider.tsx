@@ -1,6 +1,6 @@
 'use client';
 import { createContext, useContext, useState } from 'react';
-import type { Companios } from '@/schemas/nightmare-gateway';
+import type { Companios } from '@/bridge-things/schemas/nightmare-gateway';
 
 type CompaniosContextType = {
   companios: Companios;
