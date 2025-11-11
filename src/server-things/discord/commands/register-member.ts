@@ -1,22 +1,12 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import type { executeCommand } from '@/server-things/discord/types';
 import { prisma } from '@/handlers/prisma';
+import { companioMapper } from '@/server-things/utils/p5x';
+import { validateAdminId, getOptionValue } from '@/server-things/utils/discord';
 import type {
   APIChatInputApplicationCommandInteractionData,
   APIChatInputApplicationCommandInteractionDataResolved
 } from 'discord-api-types/v10';
-
-const companioMapper: Record<string, string> = {
-  strega: 'Strega',
-  zoshigaya: 'Zoshigaya',
-  zoshigaya_zen: 'Zoshigaya Zen',
-  zoshigaya_zoku: 'Zoshigaya Zoku'
-};
-
-// Whitelist of Discord user IDs allowed to register other members
-const WHITELISTED_ADMIN_IDS = new Set<string>(
-  process.env.WHITELISTED_ADMIN_IDS?.split(',').map((id) => id.trim()) || []
-);
 
 export const register = new SlashCommandBuilder()
   .setName('register-member')
@@ -47,14 +37,11 @@ export const register = new SlashCommandBuilder()
   );
 
 export const execute: executeCommand = async (interaction) => {
-  // Type guard to check if this is a chat input command
   const data =
     interaction.data as APIChatInputApplicationCommandInteractionData;
 
   const executorId = interaction.member?.user.id;
-
-  // Check if the executor is whitelisted
-  if (!executorId || !WHITELISTED_ADMIN_IDS.has(executorId)) {
+  if (!validateAdminId(executorId)) {
     return {
       type: 4,
       data: {
@@ -63,23 +50,7 @@ export const execute: executeCommand = async (interaction) => {
     };
   }
 
-  const userOption = data.options?.find((opt) => opt.name === 'user');
-  const displayNameOption = data.options?.find(
-    (opt) => opt.name === 'display_name'
-  );
-  const companioOption = data.options?.find((opt) => opt.name === 'companio');
-
-  const targetUserId =
-    userOption && 'value' in userOption ? String(userOption.value) : '';
-  const displayName =
-    displayNameOption && 'value' in displayNameOption
-      ? String(displayNameOption.value)
-      : 'Nagisa Kamisiro';
-  const companioId =
-    companioOption && 'value' in companioOption
-      ? String(companioOption.value)
-      : 'strega';
-
+  const targetUserId = getOptionValue(data.options, 'user');
   if (!targetUserId) {
     return {
       type: 4,
@@ -89,12 +60,21 @@ export const execute: executeCommand = async (interaction) => {
     };
   }
 
-  // Get the target user's information from the resolved data
+  const displayName = getOptionValue(data.options, 'display_name');
+  const companioId = getOptionValue(data.options, 'companio');
+  if (!displayName || !companioId) {
+    return {
+      type: 4,
+      data: {
+        content: 'Display name and companio are required.'
+      }
+    };
+  }
+
   const resolvedData = (
     'resolved' in interaction.data ? interaction.data.resolved : undefined
   ) as APIChatInputApplicationCommandInteractionDataResolved | undefined;
   const targetUser = resolvedData?.users?.[targetUserId];
-
   if (!targetUser) {
     return {
       type: 4,
@@ -105,7 +85,6 @@ export const execute: executeCommand = async (interaction) => {
   }
 
   try {
-    // Check if user is already registered
     const existingUser = await prisma.user.findUnique({
       where: {
         id: targetUserId
@@ -128,7 +107,6 @@ export const execute: executeCommand = async (interaction) => {
       ? `https://cdn.discordapp.com/avatars/${targetUserId}/${targetUser.avatar}.${extension}`
       : `https://cdn.discordapp.com/embed/avatars/${parseInt(targetUserId) % 5}.png`;
 
-    // Create new user
     await prisma.user.create({
       data: {
         id: targetUserId,

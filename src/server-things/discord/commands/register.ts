@@ -1,14 +1,9 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import type { executeCommand } from '@/server-things/discord/types';
 import { prisma } from '@/handlers/prisma';
+import { companioMapper } from '@/server-things/utils/p5x';
+import { getOptionValue } from '@/server-things/utils/discord';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
-
-const companioMapper: Record<string, string> = {
-  strega: 'Strega',
-  zoshigaya: 'Zoshigaya',
-  zoshigaya_zen: 'Zoshigaya Zen',
-  zoshigaya_zoku: 'Zoshigaya Zoku'
-};
+import type { executeCommand } from '@/server-things/discord/types';
 
 export const register = new SlashCommandBuilder()
   .setName('register')
@@ -33,27 +28,13 @@ export const register = new SlashCommandBuilder()
   );
 
 export const execute: executeCommand = async (interaction) => {
-  // Type guard to check if this is a chat input command
   const data =
     interaction.data as APIChatInputApplicationCommandInteractionData;
 
-  const displayNameOption = data.options?.find(
-    (opt) => opt.name === 'display_name'
-  );
-
-  const companioOption = data.options?.find((opt) => opt.name === 'companio');
-
-  const displayName =
-    displayNameOption && 'value' in displayNameOption
-      ? String(displayNameOption.value)
-      : '';
-  const companioId =
-    companioOption && 'value' in companioOption
-      ? String(companioOption.value)
-      : '';
+  const displayName = getOptionValue(data.options, 'display_name');
+  const companioId = getOptionValue(data.options, 'companio');
 
   const discordUserId = interaction.member?.user.id;
-
   if (!discordUserId) {
     return {
       type: 4,
@@ -64,7 +45,6 @@ export const execute: executeCommand = async (interaction) => {
   }
 
   try {
-    // Check if user is already registered
     const existingUser = await prisma.user.findUnique({
       where: {
         id: discordUserId
@@ -89,7 +69,6 @@ export const execute: executeCommand = async (interaction) => {
       ? `https://cdn.discordapp.com/avatars/${discordUserId}/${interaction.member.user.avatar}.${extension}`
       : `https://cdn.discordapp.com/embed/avatars/${parseInt(discordUserId) % 5}.png`;
 
-    // Create new user
     await prisma.user.create({
       data: {
         id: discordUserId,
