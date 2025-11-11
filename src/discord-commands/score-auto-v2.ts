@@ -5,8 +5,12 @@ import { parseScoresDataString } from '@/utils/parse-score-data';
 import { processScoreUpdates } from '@/handlers/update-scores';
 import { prisma } from '@/handlers/prisma';
 
+const WHITELISTED_ADMIN_IDS = new Set<string>(
+  process.env.WHITELISTED_ADMIN_IDS?.split(',').map((id) => id.trim()) || []
+);
+
 export const register = new SlashCommandBuilder()
-  .setName('score-auto')
+  .setName('score-auto-v2')
   .setDescription('Automatically record scores from input data')
   .addStringOption((option) =>
     option
@@ -130,10 +134,9 @@ async function processScoresData(
 export const execute: executeCommand = async (interaction) => {
   // Check if user is a whitelisted super admin
   const executorId = interaction.member?.user.id;
-  const whitelistedAdmins =
-    process.env.WHITELISTED_SUPER_ADMIN?.split(',') || [];
 
-  if (!executorId || !whitelistedAdmins.includes(executorId)) {
+  // Check if the executor is whitelisted
+  if (!executorId || !WHITELISTED_ADMIN_IDS.has(executorId)) {
     return {
       type: 4,
       data: {
