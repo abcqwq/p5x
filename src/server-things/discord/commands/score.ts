@@ -93,7 +93,6 @@ export const execute: executeCommand = async (interaction) => {
     });
 
     if (existingScore) {
-      // Update only the first half score
       await prisma.nightmareGatewayScore.update({
         where: {
           id: existingScore.id
@@ -111,7 +110,6 @@ export const execute: executeCommand = async (interaction) => {
         }
       };
     } else {
-      // Create new score record with first half score only
       await prisma.nightmareGatewayScore.create({
         data: {
           user_id: user.id,

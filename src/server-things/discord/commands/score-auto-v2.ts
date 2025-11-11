@@ -4,6 +4,7 @@ import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-
 import { parseScoresDataString } from '@/utils/parse-score-data';
 import { processScoreUpdates } from '@/handlers/update-scores';
 import { prisma } from '@/handlers/prisma';
+import discordClient from '@/bridge-things/network/http-client/discord-client';
 
 const WHITELISTED_ADMIN_IDS = new Set<string>(
   process.env.WHITELISTED_ADMIN_IDS?.split(',').map((id) => id.trim()) || []
@@ -26,21 +27,8 @@ async function sendFollowUpMessage(
   interactionToken: string,
   content: string
 ) {
-  const botToken = process.env.DISCORD_TOKEN;
-  if (!botToken) {
-    throw new Error('DISCORD_TOKEN is not set');
-  }
-
-  const followUpUrl = `https://discord.com/api/v10/webhooks/${applicationId}/${interactionToken}`;
-
-  await fetch(followUpUrl, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bot ${botToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ content })
-  });
+  const followUpUrl = `/api/v10/webhooks/${applicationId}/${interactionToken}`;
+  await discordClient.post(followUpUrl, { content });
 }
 
 async function processScoresData(
@@ -50,7 +38,6 @@ async function processScoresData(
   nightmareId: string
 ) {
   try {
-    // Parse the scores data string
     const { validScores, duplicateDisplayNames, invalidEntries } =
       parseScoresDataString(scoresData);
 
@@ -132,10 +119,7 @@ async function processScoresData(
 }
 
 export const execute: executeCommand = async (interaction) => {
-  // Check if user is a whitelisted super admin
   const executorId = interaction.member?.user.id;
-
-  // Check if the executor is whitelisted
   if (!executorId || !WHITELISTED_ADMIN_IDS.has(executorId)) {
     return {
       type: 4,
