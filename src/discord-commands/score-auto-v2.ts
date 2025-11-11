@@ -63,7 +63,10 @@ async function processScoresData(
       );
       messageParts.push(
         processResult.successful
-          .map((s) => `  • ${s.displayName}: ${s.score.toLocaleString()}`)
+          .map(
+            (s) =>
+              `  • ${s.displayName}: ${s.previousScore.toLocaleString()} → ${s.score.toLocaleString()}`
+          )
           .join('\n')
       );
       messageParts.push('');

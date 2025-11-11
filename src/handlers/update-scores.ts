@@ -9,6 +9,7 @@ export interface ProcessScoresResult {
     displayName: string;
     userId: string;
     score: number;
+    previousScore: number;
   }>;
   multipleMatches: string[];
   noMatches: string[];
@@ -77,7 +78,12 @@ export async function processScoreUpdates(
         }
       });
 
+      let previousScore = 0;
+
       if (existingScore) {
+        // Store the previous score before updating
+        previousScore = existingScore.first_half_score;
+
         // Update existing score
         await prisma.nightmareGatewayScore.update({
           where: {
@@ -86,7 +92,7 @@ export async function processScoreUpdates(
           data: { first_half_score: score, second_half_score: 0 }
         });
       } else {
-        // Insert new score record
+        // Insert new score record (previousScore remains 0)
         await prisma.nightmareGatewayScore.create({
           data: {
             user_id: user.id,
@@ -100,7 +106,8 @@ export async function processScoreUpdates(
       successful.push({
         displayName,
         userId: user.id,
-        score
+        score,
+        previousScore
       });
     } catch (error) {
       console.error(`Error updating score for ${displayName}:`, error);
