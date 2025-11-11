@@ -90,3 +90,82 @@ export function parseScoreData(extractedText: string): ParseScoreDataResult {
     invalidEntries
   };
 }
+
+/**
+ * Parses scores data string into validated score updates
+ *
+ * @param scoresData - String in format: displayName1:score1,displayName2:score2,...
+ * @returns Parsed and validated score data with duplicates and invalid entries separated
+ *
+ * @example
+ * const result = parseScoresDataString("Akira Kazama:318003948,Mr MJ:247650292");
+ * // result.validScores = [{ displayName: "Akira Kazama", score: 318003948 }, ...]
+ */
+export function parseScoresDataString(
+  scoresData: string
+): ParseScoreDataResult {
+  const validScores: ScoreUpdate[] = [];
+  const invalidEntries: string[] = [];
+  const displayNameCounts = new Map<string, number>();
+  const displayNameScores = new Map<string, ScoreUpdate>();
+
+  // Split by comma to get individual entries
+  const entries = scoresData
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
+
+  for (const entry of entries) {
+    // Split by colon to get display name and score
+    const parts = entry.split(':');
+
+    // Validate entry format
+    if (parts.length !== 2) {
+      invalidEntries.push(entry);
+      continue;
+    }
+
+    const displayName = parts[0].trim();
+    const scoreStr = parts[1].trim();
+
+    // Validate display name (not empty)
+    if (!displayName) {
+      invalidEntries.push(entry);
+      continue;
+    }
+
+    // Validate score (must be a valid number)
+    const score = Number(scoreStr);
+    if (!Number.isFinite(score) || score < 0) {
+      invalidEntries.push(entry);
+      continue;
+    }
+
+    // Track display name occurrences
+    const currentCount = displayNameCounts.get(displayName) || 0;
+    displayNameCounts.set(displayName, currentCount + 1);
+
+    // Store the score update (will be filtered later if duplicate)
+    displayNameScores.set(displayName, { displayName, score });
+  }
+
+  // Separate duplicates from valid entries
+  const duplicateDisplayNames: string[] = [];
+
+  for (const [displayName, count] of displayNameCounts.entries()) {
+    if (count > 1) {
+      duplicateDisplayNames.push(displayName);
+    } else {
+      const scoreUpdate = displayNameScores.get(displayName);
+      if (scoreUpdate) {
+        validScores.push(scoreUpdate);
+      }
+    }
+  }
+
+  return {
+    validScores,
+    duplicateDisplayNames,
+    invalidEntries
+  };
+}
