@@ -20,8 +20,22 @@ model Companio {
   logo_url String
   name     String
   users    User[]
+  period_minimum_scores CompanioPeriodMinimumScore[]
 
   @@map("companio")
+}
+
+model CompanioPeriodMinimumScore {
+  id                         String                  @id @default(uuid()) @db.Uuid
+  companio_id                String
+  nightmare_period_id        String                  @db.Uuid
+  minimum_score              Int
+  companio                   Companio                @relation(fields: [companio_id], references: [id])
+  nightmare_period           NightmareGatewayPeriod @relation(fields: [nightmare_period_id], references: [id])
+
+  @@unique([companio_id, nightmare_period_id])
+  @@index([nightmare_period_id])
+  @@map("companio_period_minimum_score")
 }
 
 model User {
@@ -45,6 +59,7 @@ model NightmareGatewayPeriod {
   second_half_boss_name      String
   second_half_boss_avatar_url String
   nightmare_gateway_scores   NightmareGatewayScore[]
+  companio_minimum_scores    CompanioPeriodMinimumScore[]
 
   @@index([end(sort: Desc)])
   @@map("nightmare_gateway_period")

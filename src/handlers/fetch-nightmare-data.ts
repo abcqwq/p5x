@@ -3,9 +3,11 @@ import {
   type NightmareGatewayPeriods,
   type NightmareGatewayScores,
   type Companios,
+  type CompanioPeriodMinimumScores,
   NightmareGatewayPeriodSchema,
   NightmareGatewayScoreSchema,
-  CompanioSchema
+  CompanioSchema,
+  CompanioPeriodMinimumScoreSchema
 } from '@/bridge-things/schemas/nightmare-gateway';
 
 export async function fetchNightmareGatewayPeriod(): Promise<NightmareGatewayPeriods | null> {
@@ -43,5 +45,27 @@ export async function fetchCompanios(): Promise<Companios | null> {
   if (!companios) return null;
 
   const parsed = CompanioSchema.array().parse(companios);
+  return parsed;
+}
+
+export async function fetchMinimumScores(): Promise<CompanioPeriodMinimumScores | null> {
+  const currentPeriod = await prisma.nightmareGatewayPeriod.findFirst({
+    orderBy: { end: 'desc' }
+  });
+
+  if (!currentPeriod) return null;
+
+  const minimumScores = await prisma.companioPeriodMinimumScore.findMany({
+    where: {
+      nightmare_period_id: currentPeriod.id
+    },
+    include: {
+      companio: true
+    }
+  });
+
+  if (!minimumScores) return null;
+
+  const parsed = CompanioPeriodMinimumScoreSchema.array().parse(minimumScores);
   return parsed;
 }

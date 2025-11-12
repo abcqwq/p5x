@@ -8,6 +8,7 @@ import * as registerMemberCommand from '@/server-things/discord/commands/registe
 import * as scoreAutoCommand from '@/server-things/discord/commands/score-auto';
 import * as editMemberCommand from '@/server-things/discord/commands/edit-member';
 import * as scoreAutoV2Command from '@/server-things/discord/commands/score-auto-v2';
+import * as setKkmCommand from '@/server-things/discord/commands/set-kkm';
 
 export type CommandModule = {
   register: unknown & { toJSON: () => unknown };
@@ -22,7 +23,8 @@ const commandModules: Record<string, CommandModule> = {
   'register-member': registerMemberCommand,
   'score-auto': scoreAutoCommand,
   'edit-member': editMemberCommand,
-  'score-auto-v2': scoreAutoV2Command
+  'score-auto-v2': scoreAutoV2Command,
+  'set-kkm': setKkmCommand
 };
 
 const getCommands = () => {
