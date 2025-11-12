@@ -39,3 +39,25 @@ export async function fetchNightmareGatewayPeriodById(
   const parsed = NightmareGatewayPeriodSchema.parse(period);
   return parsed;
 }
+
+export async function fetchNightmareGatewayPeriodByNumber(
+  periodNumber: string
+): Promise<NightmareGatewayPeriod | null> {
+  const numberResult = z.coerce
+    .number()
+    .int()
+    .positive()
+    .safeParse(periodNumber);
+  if (!numberResult.success) {
+    return null;
+  }
+
+  const period = await prisma.nightmareGatewayPeriod.findUnique({
+    where: { number: numberResult.data }
+  });
+
+  if (!period) return null;
+
+  const parsed = NightmareGatewayPeriodSchema.parse(period);
+  return parsed;
+}

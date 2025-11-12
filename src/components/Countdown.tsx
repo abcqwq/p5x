@@ -17,17 +17,32 @@ const constructReadableTime = (timeLeft: number | null) => {
   return `${hh}:${mm}:${ss}`;
 };
 
-const Countdown = ({ endTime }: { endTime: Date }) => {
+const Countdown = ({
+  startTime,
+  endTime,
+  ongoingCopy
+}: {
+  startTime: Date;
+  endTime: Date;
+  ongoingCopy?: string;
+}) => {
   const { timeLeft, hasEnded } = useTimeCounter(endTime);
+
+  if (startTime > new Date()) {
+    return 'not started';
+  }
 
   if (hasEnded) {
     return 'ended';
   }
 
   return (
-    <span className={robotoMono.className}>
-      {constructReadableTime(timeLeft)}
-    </span>
+    <>
+      <span className={robotoMono.className}>
+        {constructReadableTime(timeLeft)}
+      </span>
+      {ongoingCopy}
+    </>
   );
 };
 

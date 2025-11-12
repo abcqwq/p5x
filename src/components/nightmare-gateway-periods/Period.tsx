@@ -10,6 +10,7 @@ import type { NightmareGatewayPeriod } from '@/bridge-things/schemas/nightmare-g
 const Container = styled.div`
   & > * {
     display: flex;
+    flex-wrap: wrap;
     gap: ${16 / 16}rem;
   }
 `;
@@ -90,9 +91,15 @@ const Period = ({ period }: PeriodProps) => {
           </p>
           <InfoFooterContainer>
             <p>
-              <Countdown endTime={new Date(period.end)} /> hours left
+              <Countdown
+                endTime={new Date(period.end)}
+                startTime={new Date(period.start)}
+                ongoingCopy=" hours remaining"
+              />
             </p>
-            <Link href={`/nightmare-gateway/${period.id}`}>scores data</Link>
+            <Link href={`/nightmare-gateway/${period.number}`}>
+              scores data
+            </Link>
           </InfoFooterContainer>
         </InfoContainer>
       </Card>

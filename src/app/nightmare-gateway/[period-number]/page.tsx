@@ -7,22 +7,22 @@ import { ScoresProvider } from '@/react-things/providers/ScoresProvider';
 import { PeriodProvider } from '@/react-things/providers/PeriodProvider';
 import { CompaniosProvider } from '@/react-things/providers/CompaniosProvider';
 import { MinimumScoresProvider } from '@/react-things/providers/MinimumScoresProvider';
-import { fetchNightmareGatewayPeriodById } from '@/handlers/fetch-nightmare-period';
+import { fetchNightmareGatewayPeriodByNumber } from '@/handlers/fetch-nightmare-period';
 import { fetchCompanios } from '@/handlers/fetch-companios';
 import { fetchNightmareGatewayScores } from '@/handlers/fetch-gateway-scores';
 import { fetchMinimumScores } from '@/handlers/fetch-minimum-scores';
 
 interface PageProps {
   params: Promise<{
-    'period-id': string;
+    'period-number': string;
   }>;
 }
 
 const Page = async ({ params }: PageProps) => {
-  const { 'period-id': periodId } = await params;
+  const { 'period-number': periodNumber } = await params;
 
   const [period, companios] = await Promise.all([
-    fetchNightmareGatewayPeriodById(periodId),
+    fetchNightmareGatewayPeriodByNumber(periodNumber),
     fetchCompanios()
   ]);
 

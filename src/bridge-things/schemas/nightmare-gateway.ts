@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { number, z } from 'zod';
 
 export const CompanioSchema = z.object({
   id: z.string(),
@@ -25,6 +25,7 @@ export const NightmareGatewayPeriodSchema = z.object({
   id: z.string(),
   start: z.date(),
   end: z.date(),
+  number: z.number().int(),
   first_half_boss_name: z.string(),
   first_half_boss_type: z.string(),
   first_half_boss_avatar_url: z.string(),

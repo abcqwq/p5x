@@ -50,6 +50,11 @@ const Header = () => {
     [period?.end]
   );
 
+  const startDate = React.useMemo(
+    () => (period?.start ? new Date(period.start) : new Date()),
+    [period?.start]
+  );
+
   return (
     <Container>
       <TitleContainer>
@@ -62,7 +67,12 @@ const Header = () => {
         <p>
           {formatDate(period?.start || new Date())} -{' '}
           {formatDate(period?.end || new Date())} (
-          <Countdown endTime={endDate} />)
+          <Countdown
+            endTime={endDate}
+            startTime={startDate}
+            ongoingCopy=" hours remaining"
+          />
+          )
         </p>
 
         <BossContainer>
