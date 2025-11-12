@@ -4,6 +4,7 @@ import { prisma } from '@/handlers/prisma';
 import { companioMapper } from '@/server-things/utils/p5x';
 import { validateAdminId, getOptionValue } from '@/server-things/utils/discord';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
+import { fetchActiveNightmareGatewayPeriod } from '@/handlers/fetch-nightmare-period';
 
 export const register = new SlashCommandBuilder()
   .setName('set-kkm')
@@ -66,18 +67,23 @@ export const execute: executeCommand = async (interaction) => {
   }
 
   try {
-    const latestPeriod = await prisma.nightmareGatewayPeriod.findFirst({
-      orderBy: {
-        end: 'desc'
-      }
-    });
+    const activePeriod = await fetchActiveNightmareGatewayPeriod();
 
-    if (!latestPeriod || latestPeriod.end < new Date()) {
+    if (!activePeriod) {
       return {
         type: 4,
         data: {
           content:
             'No active Nightmare Gateway period found. Please contact an administrator.'
+        }
+      };
+    }
+
+    if (activePeriod.end < new Date()) {
+      return {
+        type: 4,
+        data: {
+          content: `The current Nightmare Gateway period has ended. Please wait for the next period to start.`
         }
       };
     }
@@ -101,7 +107,7 @@ export const execute: executeCommand = async (interaction) => {
       where: {
         companio_id_nightmare_period_id: {
           companio_id: companioId,
-          nightmare_period_id: latestPeriod.id
+          nightmare_period_id: activePeriod.id
         }
       },
       update: {
@@ -109,7 +115,7 @@ export const execute: executeCommand = async (interaction) => {
       },
       create: {
         companio_id: companioId,
-        nightmare_period_id: latestPeriod.id,
+        nightmare_period_id: activePeriod.id,
         minimum_score: minimumScoreNum
       }
     });

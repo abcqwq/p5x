@@ -6,14 +6,11 @@ import {
 } from '@/bridge-things/schemas/nightmare-gateway';
 
 export async function fetchActiveNightmareGatewayPeriod(): Promise<NightmareGatewayPeriod | null> {
-  const now = new Date();
-
   const period = await prisma.nightmareGatewayPeriod.findFirst({
     where: {
-      start: { lte: now },
-      end: { gte: now }
+      is_frozen: false
     },
-    orderBy: { start: 'asc' }
+    orderBy: { number: 'desc' }
   });
 
   if (!period) return null;

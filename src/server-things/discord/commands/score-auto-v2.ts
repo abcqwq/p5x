@@ -3,8 +3,8 @@ import type { executeCommand } from '@/server-things/discord/types';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
 import { parseScoresDataString } from '@/utils/parse-score-data';
 import { processScoreUpdates } from '@/handlers/update-scores';
-import { prisma } from '@/handlers/prisma';
 import discordClient from '@/bridge-things/network/http-client/discord-client';
+import { fetchActiveNightmareGatewayPeriod } from '@/handlers/fetch-nightmare-period';
 
 const WHITELISTED_ADMIN_IDS = new Set<string>(
   process.env.WHITELISTED_ADMIN_IDS?.split(',').map((id) => id.trim()) || []
@@ -149,14 +149,9 @@ export const execute: executeCommand = async (interaction) => {
     };
   }
 
-  // Fetch the latest nightmare gateway period
-  const latestPeriod = await prisma.nightmareGatewayPeriod.findFirst({
-    orderBy: {
-      end: 'desc'
-    }
-  });
+  const activePeriod = await fetchActiveNightmareGatewayPeriod();
 
-  if (!latestPeriod) {
+  if (!activePeriod) {
     return {
       type: 4,
       data: {
@@ -166,11 +161,7 @@ export const execute: executeCommand = async (interaction) => {
     };
   }
 
-  // Check if the period has not ended yet
-  const now = new Date();
-  const periodEnd = new Date(latestPeriod.end);
-
-  if (periodEnd < now) {
+  if (activePeriod.end < new Date()) {
     return {
       type: 4,
       data: {
@@ -184,7 +175,7 @@ export const execute: executeCommand = async (interaction) => {
     scoresData,
     interaction.application_id,
     interaction.token,
-    latestPeriod.id
+    activePeriod.id
   ).catch((error: unknown) => {
     console.error('Unhandled error in processScoresData:', error);
   });

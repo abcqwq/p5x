@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import type { executeCommand } from '@/server-things/discord/types';
 import { prisma } from '@/handlers/prisma';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
+import { fetchActiveNightmareGatewayPeriod } from '@/handlers/fetch-nightmare-period';
 
 export const register = new SlashCommandBuilder()
   .setName('score')
@@ -54,14 +55,9 @@ export const execute: executeCommand = async (interaction) => {
       };
     }
 
-    // Fetch the latest nightmare gateway period
-    const latestPeriod = await prisma.nightmareGatewayPeriod.findFirst({
-      orderBy: {
-        end: 'desc'
-      }
-    });
+    const activePeriod = await fetchActiveNightmareGatewayPeriod();
 
-    if (!latestPeriod) {
+    if (!activePeriod) {
       return {
         type: 4,
         data: {
@@ -71,11 +67,7 @@ export const execute: executeCommand = async (interaction) => {
       };
     }
 
-    // Check if the period has not ended yet
-    const now = new Date();
-    const periodEnd = new Date(latestPeriod.end);
-
-    if (periodEnd < now) {
+    if (activePeriod.end < new Date()) {
       return {
         type: 4,
         data: {
@@ -88,7 +80,7 @@ export const execute: executeCommand = async (interaction) => {
     const existingScore = await prisma.nightmareGatewayScore.findFirst({
       where: {
         user_id: user.id,
-        nightmare_id: latestPeriod.id
+        nightmare_id: activePeriod.id
       }
     });
 
@@ -113,7 +105,7 @@ export const execute: executeCommand = async (interaction) => {
       await prisma.nightmareGatewayScore.create({
         data: {
           user_id: user.id,
-          nightmare_id: latestPeriod.id,
+          nightmare_id: activePeriod.id,
           first_half_score: scoreValue,
           second_half_score: 0
         }

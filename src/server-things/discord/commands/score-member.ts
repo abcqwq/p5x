@@ -6,6 +6,7 @@ import type {
   APIChatInputApplicationCommandInteractionDataResolved
 } from 'discord-api-types/v10';
 import { getOptionValue } from '@/server-things/utils/discord';
+import { fetchActiveNightmareGatewayPeriod } from '@/handlers/fetch-nightmare-period';
 
 // Whitelist of Discord user IDs allowed to record scores for other members
 const WHITELISTED_ADMIN_IDS = new Set<string>(
@@ -114,14 +115,9 @@ export const execute: executeCommand = async (interaction) => {
       };
     }
 
-    // Fetch the latest nightmare gateway period
-    const latestPeriod = await prisma.nightmareGatewayPeriod.findFirst({
-      orderBy: {
-        end: 'desc'
-      }
-    });
+    const activePeriod = await fetchActiveNightmareGatewayPeriod();
 
-    if (!latestPeriod) {
+    if (!activePeriod) {
       return {
         type: 4,
         data: {
@@ -131,11 +127,7 @@ export const execute: executeCommand = async (interaction) => {
       };
     }
 
-    // Check if the period has not ended yet
-    const now = new Date();
-    const periodEnd = new Date(latestPeriod.end);
-
-    if (periodEnd < now) {
+    if (activePeriod.end < new Date()) {
       return {
         type: 4,
         data: {
@@ -148,7 +140,7 @@ export const execute: executeCommand = async (interaction) => {
     const existingScore = await prisma.nightmareGatewayScore.findFirst({
       where: {
         user_id: user.id,
-        nightmare_id: latestPeriod.id
+        nightmare_id: activePeriod.id
       }
     });
 
@@ -175,7 +167,7 @@ export const execute: executeCommand = async (interaction) => {
       await prisma.nightmareGatewayScore.create({
         data: {
           user_id: user.id,
-          nightmare_id: latestPeriod.id,
+          nightmare_id: activePeriod.id,
           first_half_score: scoreValue,
           second_half_score: 0
         }
