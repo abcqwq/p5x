@@ -29,7 +29,7 @@ model CompanioPeriodMinimumScore {
   id                         String                  @id @default(uuid()) @db.Uuid
   companio_id                String
   nightmare_period_id        String                  @db.Uuid
-  minimum_score              Int
+  minimum_score              BigInt
   companio                   Companio                @relation(fields: [companio_id], references: [id])
   nightmare_period           NightmareGatewayPeriod @relation(fields: [nightmare_period_id], references: [id])
 
@@ -75,8 +75,8 @@ model NightmareGatewayScore {
   id                 String                  @id @default(uuid()) @db.Uuid
   user_id            String                  
   nightmare_id       String                  @db.Uuid
-  first_half_score   Int
-  second_half_score  Int
+  first_half_score   BigInt
+  second_half_score  BigInt
   user               User                    @relation(fields: [user_id], references: [id])
   nightmare_period   NightmareGatewayPeriod @relation(fields: [nightmare_id], references: [id])
 
@@ -99,9 +99,9 @@ model NightmareGatewayScoreSnapshot {
   companio_name         String
   companio_logo_url     String
   // Score data
-  first_half_score      Int
-  second_half_score     Int
-  total_score           Int
+  first_half_score      BigInt
+  second_half_score     BigInt
+  total_score           BigInt
   // Snapshot metadata
   frozen_at             DateTime                @default(now()) @db.Timestamptz
   

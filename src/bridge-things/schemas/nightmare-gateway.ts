@@ -16,8 +16,8 @@ export const UserSchema = z.object({
 
 export const NightmareGatewayScoreSchema = z.object({
   id: z.string(),
-  first_half_score: z.number().int(),
-  second_half_score: z.number().int(),
+  first_half_score: z.bigint().transform((val) => Number(val)),
+  second_half_score: z.bigint().transform((val) => Number(val)),
   user: UserSchema
 });
 
@@ -38,7 +38,7 @@ export const CompanioPeriodMinimumScoreSchema = z.object({
   id: z.string(),
   companio_id: z.string(),
   nightmare_period_id: z.string(),
-  minimum_score: z.number().int(),
+  minimum_score: z.bigint().transform((val) => Number(val)),
   companio: CompanioSchema
 });
 

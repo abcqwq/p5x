@@ -81,8 +81,8 @@ export async function processScoreUpdates(
       let previousScore = 0;
 
       if (existingScore) {
-        // Store the previous score before updating
-        previousScore = existingScore.first_half_score;
+        // Store the previous score before updating (convert bigint to number)
+        previousScore = Number(existingScore.first_half_score);
 
         // Update existing score
         await prisma.nightmareGatewayScore.update({
