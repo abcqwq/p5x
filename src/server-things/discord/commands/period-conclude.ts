@@ -42,16 +42,15 @@ export const execute: executeCommand = async (interaction) => {
       };
     }
 
-    // if (latestUnfrozenPeriod.end > new Date()) {
-    //   return {
-    //     type: 4,
-    //     data: {
-    //       content: 'Cannot conclude a period that has not ended yet.'
-    //     }
-    //   };
-    // }
+    if (latestUnfrozenPeriod.end > new Date()) {
+      return {
+        type: 4,
+        data: {
+          content: 'Cannot conclude a period that has not ended yet.'
+        }
+      };
+    }
 
-    // Fetch all scores for this period with user and companio data
     const scores = await prisma.nightmareGatewayScore.findMany({
       where: {
         nightmare_id: latestUnfrozenPeriod.id
