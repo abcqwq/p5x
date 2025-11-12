@@ -51,15 +51,17 @@ model User {
 }
 
 model NightmareGatewayPeriod {
-  id                         String                   @id @default(uuid()) @db.Uuid
-  start                      DateTime                 @db.Timestamptz
-  end                        DateTime                 @db.Timestamptz
-  first_half_boss_name       String
-  first_half_boss_avatar_url String
-  second_half_boss_name      String
+  id                          String                   @id @default(uuid()) @db.Uuid
+  start                       DateTime                 @db.Timestamptz
+  end                         DateTime                 @db.Timestamptz
+  first_half_boss_name        String
+  first_half_boss_type        String
+  first_half_boss_avatar_url  String
+  second_half_boss_name       String
+  second_half_boss_type       String
   second_half_boss_avatar_url String
-  nightmare_gateway_scores   NightmareGatewayScore[]
-  companio_minimum_scores    CompanioPeriodMinimumScore[]
+  nightmare_gateway_scores    NightmareGatewayScore[]
+  companio_minimum_scores     CompanioPeriodMinimumScore[]
 
   @@index([start, end])
   @@index([end(sort: Desc)])

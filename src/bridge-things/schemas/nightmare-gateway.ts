@@ -26,8 +26,10 @@ export const NightmareGatewayPeriodSchema = z.object({
   start: z.date(),
   end: z.date(),
   first_half_boss_name: z.string(),
+  first_half_boss_type: z.string(),
   first_half_boss_avatar_url: z.string(),
   second_half_boss_name: z.string(),
+  second_half_boss_type: z.string(),
   second_half_boss_avatar_url: z.string()
 });
 
