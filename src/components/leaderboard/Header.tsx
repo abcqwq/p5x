@@ -61,8 +61,8 @@ const Header = () => {
         <PeriodTitle className={corben.className}>Period Details</PeriodTitle>
         <p>
           {formatDate(period?.start || new Date())} -{' '}
-          {formatDate(period?.end || new Date())}{' '}
-          <Countdown endTime={endDate} />
+          {formatDate(period?.end || new Date())} (
+          <Countdown endTime={endDate} />)
         </p>
 
         <BossContainer>
