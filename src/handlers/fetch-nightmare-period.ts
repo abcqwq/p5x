@@ -15,8 +15,6 @@ export async function fetchActiveNightmareGatewayPeriod(): Promise<NightmareGate
 
   if (!period) return null;
 
-  console.log('Fetched active period:', period);
-
   if (period.start > new Date()) {
     return null;
   }
