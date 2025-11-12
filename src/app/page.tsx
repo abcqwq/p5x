@@ -3,26 +3,44 @@ import Header from '@/components/leaderboard/Header';
 import Body from '@/components/leaderboard/Body';
 
 import { ScoresProvider } from '@/react-things/providers/ScoresProvider';
-import { PeriodsProvider } from '@/react-things/providers/PeriodsProvider';
+import { PeriodProvider } from '@/react-things/providers/PeriodProvider';
 import { CompaniosProvider } from '@/react-things/providers/CompaniosProvider';
 import { MinimumScoresProvider } from '@/react-things/providers/MinimumScoresProvider';
-import {
-  fetchNightmareGatewayPeriod,
-  fetchNightmareGatewayScores,
-  fetchCompanios,
-  fetchMinimumScores
-} from '@/handlers/fetch-nightmare-data';
+import { fetchActiveNightmareGatewayPeriod } from '@/handlers/fetch-nightmare-period';
+import { fetchCompanios } from '@/handlers/fetch-companios';
+import { fetchNightmareGatewayScores } from '@/handlers/fetch-gateway-scores';
+import { fetchMinimumScores } from '@/handlers/fetch-minimum-scores';
 
 const Page = async () => {
-  const [periods, companios, scores, minimumScores] = await Promise.all([
-    fetchNightmareGatewayPeriod(),
-    fetchCompanios(),
-    fetchNightmareGatewayScores(),
-    fetchMinimumScores()
+  const [activePeriod, companios] = await Promise.all([
+    fetchActiveNightmareGatewayPeriod(),
+    fetchCompanios()
+  ]);
+
+  if (!activePeriod) {
+    return (
+      <PeriodProvider data={null}>
+        <CompaniosProvider data={companios || []}>
+          <MinimumScoresProvider data={[]}>
+            <ScoresProvider data={[]}>
+              <Layout>
+                <Header />
+                <Body />
+              </Layout>
+            </ScoresProvider>
+          </MinimumScoresProvider>
+        </CompaniosProvider>
+      </PeriodProvider>
+    );
+  }
+
+  const [scores, minimumScores] = await Promise.all([
+    fetchNightmareGatewayScores(activePeriod.id),
+    fetchMinimumScores(activePeriod.id)
   ]);
 
   return (
-    <PeriodsProvider data={periods || []}>
+    <PeriodProvider data={activePeriod}>
       <CompaniosProvider data={companios || []}>
         <MinimumScoresProvider data={minimumScores || []}>
           <ScoresProvider data={scores || []}>
@@ -33,7 +51,7 @@ const Page = async () => {
           </ScoresProvider>
         </MinimumScoresProvider>
       </CompaniosProvider>
-    </PeriodsProvider>
+    </PeriodProvider>
   );
 };
 

@@ -5,7 +5,7 @@ import Countdown from '@/components/Countdown';
 import ProfileCard from '@/components/ProfileCard';
 
 import { corben } from '@/react-things/fonts';
-import { usePeriods } from '@/react-things/providers/PeriodsProvider';
+import { usePeriod } from '@/react-things/providers/PeriodProvider';
 import { formatDate } from '@/react-things/utils/date';
 
 const Container = styled.section`
@@ -33,8 +33,7 @@ const BossContainer = styled.div`
 `;
 
 const Header = () => {
-  const { getSelectedDetail } = usePeriods();
-  const period = getSelectedDetail();
+  const { period } = usePeriod();
 
   const endDate = React.useMemo(
     () => (period?.end ? new Date(period.end) : new Date()),

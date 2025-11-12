@@ -2,7 +2,7 @@
 import styled from 'styled-components';
 import Dropdown from '@/components/Dropdown';
 
-import { usePeriods } from '@/react-things/providers/PeriodsProvider';
+import { usePeriod } from '@/react-things/providers/PeriodProvider';
 
 const Container = styled.section`
   display: flex;
@@ -13,19 +13,22 @@ const Container = styled.section`
 `;
 
 const CompanioInput = () => {
-  const { periods, selectedPeriodId, setSelectedPeriodId } = usePeriods();
+  const { period } = usePeriod();
+  if (!period) return null;
 
   return (
     <Container>
       <Dropdown
         id="period-select"
         label="Period"
-        items={periods.map((period) => ({
-          id: period.id,
-          value: `${period.first_half_boss_name} & ${period.second_half_boss_name}`
-        }))}
-        selectedItemId={selectedPeriodId}
-        onUpdate={setSelectedPeriodId}
+        items={[
+          {
+            id: period.id,
+            value: `${period.first_half_boss_name} & ${period.second_half_boss_name}`
+          }
+        ]}
+        selectedItemId={period.id}
+        onUpdate={() => {}}
       />
     </Container>
   );
