@@ -3,71 +3,64 @@ import { PrismaClient } from '@/generated/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Starting seed...');
-
-  // Create 4 companies
-  await Promise.all([
-    prisma.companio.create({
-      data: {
-        id: 'strega',
-        name: 'Strega',
-        logo_url:
-          'https://cdn.discordapp.com/icons/1418134277018619924/a50261cdbf345ef6951b1bc6b2dfadf2.png?size=64'
-      }
-    }),
-    prisma.companio.create({
-      data: {
-        id: 'zoshigaya',
-        name: 'Zoshigaya',
-        logo_url:
-          'https://cdn.discordapp.com/icons/814766249233481728/093c6f9a880ae01bd89435dbcf5bfbc5.png?size=64'
-      }
-    }),
-    prisma.companio.create({
-      data: {
-        id: 'zoshigaya_zen',
-        name: 'Zoshigaya Zen',
-        logo_url:
-          'https://cdn.discordapp.com/icons/814766249233481728/093c6f9a880ae01bd89435dbcf5bfbc5.png?size=64'
-      }
-    }),
-    prisma.companio.create({
-      data: {
-        id: 'zoshigaya_zoku',
-        name: 'Zoshigaya Zoku',
-        logo_url:
-          'https://cdn.discordapp.com/icons/814766249233481728/093c6f9a880ae01bd89435dbcf5bfbc5.png?size=64'
-      }
-    })
-  ]);
-
-  console.log('✅ Created 2 companies');
-
-  // Create 2 nightmare gateway periods
-  await Promise.all([
-    prisma.nightmareGatewayPeriod.create({
-      data: {
-        start: new Date('2025-11-07'),
-        end: new Date('2025-11-14'),
-        first_half_boss_name: 'Baal (DoD)',
-        first_half_boss_avatar_url: '',
-        second_half_boss_name: 'Nidhoggr (DoD)',
-        second_half_boss_avatar_url: ''
-      }
-    })
-  ]);
-
-  console.log('✅ Created 1 nightmare gateway period');
-
+  // console.log('🌱 Starting seed...');
+  // // Create 4 companies
+  // await Promise.all([
+  //   prisma.companio.create({
+  //     data: {
+  //       id: 'strega',
+  //       name: 'Strega',
+  //       logo_url:
+  //         'https://cdn.discordapp.com/icons/1418134277018619924/a50261cdbf345ef6951b1bc6b2dfadf2.png?size=64'
+  //     }
+  //   }),
+  //   prisma.companio.create({
+  //     data: {
+  //       id: 'zoshigaya',
+  //       name: 'Zoshigaya',
+  //       logo_url:
+  //         'https://cdn.discordapp.com/icons/814766249233481728/093c6f9a880ae01bd89435dbcf5bfbc5.png?size=64'
+  //     }
+  //   }),
+  //   prisma.companio.create({
+  //     data: {
+  //       id: 'zoshigaya_zen',
+  //       name: 'Zoshigaya Zen',
+  //       logo_url:
+  //         'https://cdn.discordapp.com/icons/814766249233481728/093c6f9a880ae01bd89435dbcf5bfbc5.png?size=64'
+  //     }
+  //   }),
+  //   prisma.companio.create({
+  //     data: {
+  //       id: 'zoshigaya_zoku',
+  //       name: 'Zoshigaya Zoku',
+  //       logo_url:
+  //         'https://cdn.discordapp.com/icons/814766249233481728/093c6f9a880ae01bd89435dbcf5bfbc5.png?size=64'
+  //     }
+  //   })
+  // ]);
+  // console.log('✅ Created 2 companies');
+  // // Create 2 nightmare gateway periods
+  // await Promise.all([
+  //   prisma.nightmareGatewayPeriod.create({
+  //     data: {
+  //       start: new Date('2025-11-07'),
+  //       end: new Date('2025-11-14'),
+  //       first_half_boss_name: 'Baal (DoD)',
+  //       first_half_boss_avatar_url: '',
+  //       second_half_boss_name: 'Nidhoggr (DoD)',
+  //       second_half_boss_avatar_url: ''
+  //     }
+  //   })
+  // ]);
+  // console.log('✅ Created 1 nightmare gateway period');
   // // Generate user names and avatar URLs
-
   // type UserBlueprint = {
   //   name: string;
   //   discordId: string;
   //   score: number;
   //   discordUserId: string;
   // };
-
   // const userBlueprints: UserBlueprint[] = [
   //   {
   //     name: 'Mr MJ',
@@ -190,7 +183,6 @@ async function main() {
   //     discordUserId: '528990620019064843'
   //   }
   // ];
-
   // const users = [];
   // for (let i = 0; i < userBlueprints.length; i++) {
   //   const user = await prisma.user.create({
@@ -204,9 +196,7 @@ async function main() {
   //   });
   //   users.push(user);
   // }
-
   // console.log('✅ Created Strega users');
-
   // for (let i = 0; i < userBlueprints.length; i++) {
   //   await prisma.nightmareGatewayScore.create({
   //     data: {
@@ -217,7 +207,6 @@ async function main() {
   //     }
   //   });
   // }
-
   // console.log('\n🎉 Seed completed successfully!');
 }
 
