@@ -5,6 +5,7 @@ import type {
   APIChatInputApplicationCommandInteractionData,
   APIChatInputApplicationCommandInteractionDataResolved
 } from 'discord-api-types/v10';
+import { getOptionValue } from '@/server-things/utils/discord';
 
 // Whitelist of Discord user IDs allowed to record scores for other members
 const WHITELISTED_ADMIN_IDS = new Set<string>(
@@ -28,6 +29,16 @@ export const register = new SlashCommandBuilder()
       .setDescription('Their score')
       .setRequired(true)
       .setMinValue(0)
+      .setMaxValue(Number.MAX_SAFE_INTEGER)
+  )
+  .addNumberOption((option) =>
+    option
+      .setName('alt_number')
+      .setDescription(
+        'Alt account number (e.g., 1 for first alt, 2 for second alt)'
+      )
+      .setRequired(false)
+      .setMinValue(1)
       .setMaxValue(Number.MAX_SAFE_INTEGER)
   );
 
@@ -56,6 +67,8 @@ export const execute: executeCommand = async (interaction) => {
   const scoreValue =
     scoreOption && 'value' in scoreOption ? Number(scoreOption.value) : 0;
 
+  const altNumber = getOptionValue(data.options, 'alt_number');
+
   if (!targetUserId) {
     return {
       type: 4,
@@ -81,10 +94,12 @@ export const execute: executeCommand = async (interaction) => {
   }
 
   try {
-    // Check if user is registered
+    const userIdWithAlt = altNumber
+      ? `${targetUserId}@${altNumber}`
+      : targetUserId;
     const user = await prisma.user.findUnique({
       where: {
-        id: targetUserId
+        id: userIdWithAlt
       }
     });
 
@@ -92,7 +107,9 @@ export const execute: executeCommand = async (interaction) => {
       return {
         type: 4,
         data: {
-          content: `<@${targetUserId}> is not registered yet. Please use the \`/register-member\` command first to register them.`
+          content: altNumber
+            ? `User <@${targetUserId}> alt #${altNumber} is not registered. Please ask them to register first.`
+            : `User <@${targetUserId}> is not registered. Please ask them to register first.`
         }
       };
     }
