@@ -1,5 +1,5 @@
 const formatNumber = (num: number) => {
-  return new Intl.NumberFormat('en-US').format(num);
+  return new Intl.NumberFormat('ID').format(num);
 };
 
 export { formatNumber };

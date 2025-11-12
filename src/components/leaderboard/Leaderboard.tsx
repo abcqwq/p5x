@@ -2,10 +2,9 @@
 import styled from 'styled-components';
 
 import { useScores } from '@/react-things/providers/ScoresProvider';
-import { useMinimumScores } from '@/react-things/providers/MinimumScoresProvider';
 import { useCompanios } from '@/react-things/providers/CompaniosProvider';
-import { formatNumber } from '@/react-things/utils/number';
-import type { NightmareGatewayScore } from '@/bridge-things/schemas/nightmare-gateway';
+import { ScoreRow } from './ScoreRow';
+import { TableHeader } from './TableHeader';
 
 const TableContainer = styled.div`
   overflow-x: auto;
@@ -25,133 +24,21 @@ const InnerContainer = styled.div`
   }
 `;
 
-const Row = styled.div`
-  padding: ${8 / 16}rem ${16 / 16}rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  & > * {
-    flex: 1;
-    flex-shrink: 0;
-    flex-basis: ${180 / 16}rem;
-  }
-
-  & > *:nth-child(1),
-  & > *:nth-child(4) {
-    flex-basis: ${64 / 16}rem;
-  }
-
-  flex-wrap: nowrap;
-`;
-
-const ScoreRow = styled(Row)`
-  border-radius: ${8 / 16}rem;
-  width: 100%;
-`;
-
-const Cell = styled.div`
-  justify-content: flex-start;
-`;
-
-const Img = styled.img`
-  height: ${32 / 16}rem;
-  border-radius: 50%;
-`;
-
-const CompanioImg = styled.img`
-  height: ${32 / 16}rem;
-`;
-
-const CompanioInnerWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${8 / 16}rem;
-`;
-
-const UserInnerWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${8 / 16}rem;
-`;
-
-const ScoreColumn = styled.span`
-  color: var(--color);
-`;
-
-const colorMapper = (success: boolean, isMinimumCheckEnabled: boolean) => {
-  if (!isMinimumCheckEnabled) return 'var(--color-text-1)';
-  if (success) return 'var(--color-success)';
-  return 'var(--color-danger)';
-};
-
-const Score = (
-  score: NightmareGatewayScore,
-  rank: number,
-  isMinimumCheckEnabled: boolean,
-  passedMinimumScore: boolean
-) => {
-  return (
-    <ScoreRow key={score.id}>
-      <Cell>{rank}</Cell>
-      <Cell>
-        <UserInnerWrapper>
-          {score.user.avatar_url && (
-            <Img src={score.user.avatar_url} alt={score.user.name} />
-          )}
-          {score.user.name}
-        </UserInnerWrapper>
-      </Cell>
-      <Cell>
-        <ScoreColumn
-          style={
-            {
-              '--color': colorMapper(passedMinimumScore, isMinimumCheckEnabled)
-            } as React.CSSProperties
-          }
-        >
-          {formatNumber(score.first_half_score)}
-        </ScoreColumn>
-      </Cell>
-      <Cell>
-        <CompanioInnerWrapper>
-          <CompanioImg
-            src={score.user.companio.logo_url}
-            alt={score.user.companio.name}
-          />
-          {score.user.companio.name}
-        </CompanioInnerWrapper>
-      </Cell>
-    </ScoreRow>
-  );
-};
-
 const Leaderboard = () => {
   const { scores } = useScores();
   const { selectedCompanios } = useCompanios();
-  const { getMinimumScoreForCompanio, isMinimumCheckEnabled } =
-    useMinimumScores();
+
+  const filteredScores = scores.filter((score) =>
+    selectedCompanios.includes(score.user.companio.id)
+  );
 
   return (
     <TableContainer>
       <InnerContainer>
-        <Row>
-          <Cell>Rank</Cell>
-          <Cell>Name</Cell>
-          <Cell>Score</Cell>
-          <Cell>Companio</Cell>
-        </Row>
-        {scores
-          .filter((score) => selectedCompanios.includes(score.user.companio.id))
-          .map((score, index) =>
-            Score(
-              score,
-              index + 1,
-              isMinimumCheckEnabled,
-              score.first_half_score >=
-                getMinimumScoreForCompanio(score.user.companio.id)
-            )
-          )}
+        <TableHeader />
+        {filteredScores.map((score, index) => (
+          <ScoreRow key={score.id} score={score} rank={index + 1} />
+        ))}
       </InnerContainer>
     </TableContainer>
   );
