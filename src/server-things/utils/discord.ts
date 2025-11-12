@@ -12,7 +12,17 @@ const WHITELISTED_ADMIN_IDS = new Set<string>(
   process.env.WHITELISTED_ADMIN_IDS?.split(',').map((id) => id.trim()) || []
 );
 
+const WHITELISTED_SUPER_ADMIN_IDS = new Set<string>(
+  process.env.WHITELISTED_SUPER_ADMIN_IDS?.split(',').map((id) => id.trim()) ||
+    []
+);
+
 export const validateAdminId = (id: string | undefined): boolean => {
   if (!id) return false;
   return WHITELISTED_ADMIN_IDS.has(id);
+};
+
+export const validateSuperAdminId = (id: string | undefined): boolean => {
+  if (!id) return false;
+  return WHITELISTED_SUPER_ADMIN_IDS.has(id);
 };
