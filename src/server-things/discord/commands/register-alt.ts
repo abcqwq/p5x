@@ -122,7 +122,7 @@ export const execute: executeCommand = async (interaction) => {
     await prisma.user.create({
       data: {
         id: userIdWithAlt,
-        discord_username: targetUser.username || userIdWithAlt,
+        discord_username: `${targetUser.username}@${altNumber}`,
         name: displayName,
         avatar_url: avatarUrl,
         companio_id: companioId
@@ -134,7 +134,7 @@ export const execute: executeCommand = async (interaction) => {
     return {
       type: 4,
       data: {
-        content: `Successfully registered <@${targetUserId}> as alt #${altNumber}!\n**Display Name:** ${displayName}\n**Companio:** ${companioName}\n**Alt Number:** ${altNumber}`
+        content: `Successfully registered <@${targetUserId}> #${altNumber} alt!\n**Display Name:** ${displayName}\n**Companio:** ${companioName}\n**Alt Number:** ${altNumber}`
       }
     };
   } catch (error) {
