@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "nightmare_gateway_period" ALTER COLUMN "start" SET DATA TYPE TIMESTAMPTZ,
+ALTER COLUMN "end" SET DATA TYPE TIMESTAMPTZ;
