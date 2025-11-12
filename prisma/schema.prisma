@@ -64,6 +64,7 @@ model NightmareGatewayPeriod {
   second_half_boss_avatar_url String
   nightmare_gateway_scores    NightmareGatewayScore[]
   companio_minimum_scores     CompanioPeriodMinimumScore[]
+  score_snapshots             NightmareGatewayScoreSnapshot[]
 
   @@index([start, end])
   @@index([end(sort: Desc)])
@@ -83,4 +84,32 @@ model NightmareGatewayScore {
   @@index([nightmare_id])
   @@index([first_half_score(sort: Desc)])
   @@map("nightmare_gateway_score")
+}
+
+model NightmareGatewayScoreSnapshot {
+  id                    String                  @id @default(uuid()) @db.Uuid
+  user_id               String
+  nightmare_period_id   String                  @db.Uuid
+  // Frozen user info
+  discord_username      String
+  name                  String
+  avatar_url            String
+  // Frozen companio info
+  companio_id           String
+  companio_name         String
+  companio_logo_url     String
+  // Score data
+  first_half_score      Int
+  second_half_score     Int
+  total_score           Int
+  // Snapshot metadata
+  frozen_at             DateTime                @default(now()) @db.Timestamptz
+  
+  nightmare_period      NightmareGatewayPeriod @relation(fields: [nightmare_period_id], references: [id])
+
+  @@unique([user_id, nightmare_period_id])
+  @@index([nightmare_period_id])
+  @@index([total_score(sort: Desc)])
+  @@index([first_half_score(sort: Desc)])
+  @@map("nightmare_gateway_score_snapshot")
 }
