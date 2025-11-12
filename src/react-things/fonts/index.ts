@@ -1,4 +1,4 @@
-import { Inter, Corben } from 'next/font/google';
+import { Inter, Corben, Roboto_Mono } from 'next/font/google';
 
 export const baseFont = Inter({
   subsets: ['latin'],
@@ -8,4 +8,9 @@ export const baseFont = Inter({
 export const corben = Corben({
   subsets: ['latin'],
   weight: ['400']
+});
+
+export const robotoMono = Roboto_Mono({
+  subsets: ['latin'],
+  weight: ['600']
 });
