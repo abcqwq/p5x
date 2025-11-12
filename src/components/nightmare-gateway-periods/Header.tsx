@@ -17,7 +17,7 @@ const Subtitle = styled.p`
 const Header = () => {
   return (
     <Container>
-      <Title className={corben.className}>Nightmare Gateway Periods</Title>
+      <Title className={corben.className}>Nightmare Gateways</Title>
       <Subtitle>All periods sorted by end date</Subtitle>
     </Container>
   );

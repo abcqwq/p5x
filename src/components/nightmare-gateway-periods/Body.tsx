@@ -1,18 +1,12 @@
 'use client';
 import styled from 'styled-components';
+import Period from '@/components/nightmare-gateway-periods/Period';
+
 import { usePeriods } from '@/react-things/providers/PeriodsProvider';
 
 const Container = styled.div`
-  background-color: var(--color-bg-2);
   border-radius: ${8 / 16}rem;
-  padding: ${24 / 16}rem;
-`;
-
-const Pre = styled.pre`
-  font-size: ${14 / 16}rem;
-  overflow: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+  padding: ${24 / 16}rem 0;
 `;
 
 const Body = () => {
@@ -20,7 +14,9 @@ const Body = () => {
 
   return (
     <Container>
-      <Pre>{JSON.stringify(periods, null, 2)}</Pre>
+      {periods.map((period, index) => (
+        <Period key={period.id} period={period} periodIndex={index} />
+      ))}
     </Container>
   );
 };

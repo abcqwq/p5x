@@ -25,13 +25,9 @@ const Countdown = ({ endTime }: { endTime: Date }) => {
   }
 
   return (
-    <>
-      (
-      <span className={robotoMono.className}>
-        {constructReadableTime(timeLeft)}
-      </span>{' '}
-      hours left)
-    </>
+    <span className={robotoMono.className}>
+      {constructReadableTime(timeLeft)}
+    </span>
   );
 };
 
