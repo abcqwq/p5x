@@ -10,10 +10,20 @@ export async function fetchActiveNightmareGatewayPeriod(): Promise<NightmareGate
     where: {
       is_frozen: false
     },
-    orderBy: { number: 'desc' }
+    orderBy: { number: 'asc' }
   });
 
   if (!period) return null;
+
+  console.log('Fetched active period:', period);
+
+  if (period.start > new Date()) {
+    return null;
+  }
+
+  if (period.end < new Date()) {
+    return null;
+  }
 
   const parsed = NightmareGatewayPeriodSchema.parse(period);
   return parsed;

@@ -42,14 +42,14 @@ export const execute: executeCommand = async (interaction) => {
       };
     }
 
-    if (latestUnfrozenPeriod.end > new Date()) {
-      return {
-        type: 4,
-        data: {
-          content: 'Cannot conclude a period that has not ended yet.'
-        }
-      };
-    }
+    // if (latestUnfrozenPeriod.end > new Date()) {
+    //   return {
+    //     type: 4,
+    //     data: {
+    //       content: 'Cannot conclude a period that has not ended yet.'
+    //     }
+    //   };
+    // }
 
     // Fetch all scores for this period with user and companio data
     const scores = await prisma.nightmareGatewayScore.findMany({
@@ -64,22 +64,6 @@ export const execute: executeCommand = async (interaction) => {
         }
       }
     });
-
-    const existingSnapshotsCount =
-      await prisma.nightmareGatewayScoreSnapshot.count({
-        where: {
-          nightmare_period_id: latestUnfrozenPeriod.id
-        }
-      });
-
-    if (existingSnapshotsCount > 0) {
-      return {
-        type: 4,
-        data: {
-          content: `Period #${latestUnfrozenPeriod.number} has already been concluded. Found ${existingSnapshotsCount} existing snapshot(s).`
-        }
-      };
-    }
 
     const snapshotData = scores.map((score) => ({
       user_id: score.user.id,
@@ -96,6 +80,12 @@ export const execute: executeCommand = async (interaction) => {
     }));
 
     const result = await prisma.$transaction(async (tx) => {
+      await tx.nightmareGatewayScoreSnapshot.deleteMany({
+        where: {
+          nightmare_period_id: latestUnfrozenPeriod.id
+        }
+      });
+
       const snapshotResult = await tx.nightmareGatewayScoreSnapshot.createMany({
         data: snapshotData,
         skipDuplicates: true
