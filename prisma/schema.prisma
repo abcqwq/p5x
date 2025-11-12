@@ -52,6 +52,8 @@ model User {
 
 model NightmareGatewayPeriod {
   id                          String                   @id @default(uuid()) @db.Uuid
+  number                      Int                      @unique @default(autoincrement())
+  is_frozen                   Boolean                  @default(false)
   start                       DateTime                 @db.Timestamptz
   end                         DateTime                 @db.Timestamptz
   first_half_boss_name        String
