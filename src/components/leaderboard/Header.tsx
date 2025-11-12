@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import React from 'react';
 import Countdown from '@/components/Countdown';
 import ProfileCard from '@/components/ProfileCard';
+import Link from '@/components/Link';
 
 import { corben } from '@/react-things/fonts';
 import { usePeriod } from '@/react-things/providers/PeriodProvider';
@@ -12,6 +13,15 @@ const Container = styled.section`
   display: flex;
   flex-direction: column;
   gap: ${16 / 16}rem;
+`;
+
+const TitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: ${8 / 16}rem;
+
+  flex-wrap: wrap;
 `;
 
 const Title = styled.h1``;
@@ -42,7 +52,10 @@ const Header = () => {
 
   return (
     <Container>
-      <Title className={corben.className}>Nightmare's Gateway Tracker</Title>
+      <TitleContainer>
+        <Title className={corben.className}>Nightmare's Gateway Tracker</Title>
+        <Link href="/nightmare-gateway-periods">view all periods</Link>
+      </TitleContainer>
 
       <PeriodSection>
         <PeriodTitle className={corben.className}>Period Details</PeriodTitle>

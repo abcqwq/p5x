@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import Layout from '@/components/leaderboard/Layout';
 import Header from '@/components/leaderboard/Header';
 import Body from '@/components/leaderboard/Body';
@@ -18,20 +19,7 @@ const Page = async () => {
   ]);
 
   if (!activePeriod) {
-    return (
-      <PeriodProvider data={null}>
-        <CompaniosProvider data={companios || []}>
-          <MinimumScoresProvider data={[]}>
-            <ScoresProvider data={[]}>
-              <Layout>
-                <Header />
-                <Body />
-              </Layout>
-            </ScoresProvider>
-          </MinimumScoresProvider>
-        </CompaniosProvider>
-      </PeriodProvider>
-    );
+    redirect('/nightmare-gateway-periods');
   }
 
   const [scores, minimumScores] = await Promise.all([

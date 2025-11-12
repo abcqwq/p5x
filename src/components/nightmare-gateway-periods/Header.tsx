@@ -10,15 +10,10 @@ const Container = styled.section`
 
 const Title = styled.h1``;
 
-const Subtitle = styled.p`
-  color: var(--color-text-2);
-`;
-
 const Header = () => {
   return (
     <Container>
       <Title className={corben.className}>Nightmare Gateways</Title>
-      <Subtitle>All periods sorted by end date</Subtitle>
     </Container>
   );
 };
