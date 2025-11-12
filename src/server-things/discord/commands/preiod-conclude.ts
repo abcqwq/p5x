@@ -4,7 +4,7 @@ import { prisma } from '@/handlers/prisma';
 import { validateSuperAdminId } from '@/server-things/utils/discord';
 
 export const register = new SlashCommandBuilder()
-  .setName('conclude-period')
+  .setName('period-conclude')
   .setDescription(
     'Conclude and freeze the latest period with score snapshots (Super Admin only)'
   );

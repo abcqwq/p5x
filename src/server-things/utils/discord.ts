@@ -13,8 +13,7 @@ const WHITELISTED_ADMIN_IDS = new Set<string>(
 );
 
 const WHITELISTED_SUPER_ADMIN_IDS = new Set<string>(
-  process.env.WHITELISTED_SUPER_ADMIN_IDS?.split(',').map((id) => id.trim()) ||
-    []
+  process.env.WHITELISTED_SUPER_ADMIN?.split(',').map((id) => id.trim()) || []
 );
 
 export const validateAdminId = (id: string | undefined): boolean => {
