@@ -1,5 +1,5 @@
 'use client';
-import useTimeCounter from '@/react-things/hooks/useTimeCounter';
+import useTimeCounter from '@/react-things/hooks/use-time-counter';
 
 import { robotoMono } from '@/react-things/fonts';
 

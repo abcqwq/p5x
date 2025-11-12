@@ -2,6 +2,7 @@
 import styled from 'styled-components';
 
 import { useScores } from '@/react-things/providers/ScoresProvider';
+import { useMinimumScores } from '@/react-things/providers/MinimumScoresProvider';
 import { useCompanios } from '@/react-things/providers/CompaniosProvider';
 import { formatNumber } from '@/react-things/utils/number';
 import type { NightmareGatewayScore } from '@/bridge-things/schemas/nightmare-gateway';
@@ -74,7 +75,22 @@ const UserInnerWrapper = styled.div`
   gap: ${8 / 16}rem;
 `;
 
-const Score = (score: NightmareGatewayScore, rank: number) => {
+const ScoreColumn = styled.span`
+  color: var(--color);
+`;
+
+const colorMapper = (success: boolean, isMinimumCheckEnabled: boolean) => {
+  if (!isMinimumCheckEnabled) return 'var(--color-text-1)';
+  if (success) return 'var(--color-success)';
+  return 'var(--color-danger)';
+};
+
+const Score = (
+  score: NightmareGatewayScore,
+  rank: number,
+  isMinimumCheckEnabled: boolean,
+  passedMinimumScore: boolean
+) => {
   return (
     <ScoreRow key={score.id}>
       <Cell>{rank}</Cell>
@@ -87,7 +103,15 @@ const Score = (score: NightmareGatewayScore, rank: number) => {
         </UserInnerWrapper>
       </Cell>
       <Cell>
-        {formatNumber(score.first_half_score + score.second_half_score)}
+        <ScoreColumn
+          style={
+            {
+              '--color': colorMapper(passedMinimumScore, isMinimumCheckEnabled)
+            } as React.CSSProperties
+          }
+        >
+          {formatNumber(score.first_half_score)}
+        </ScoreColumn>
       </Cell>
       <Cell>
         <CompanioInnerWrapper>
@@ -105,6 +129,8 @@ const Score = (score: NightmareGatewayScore, rank: number) => {
 const Leaderboard = () => {
   const { scores } = useScores();
   const { selectedCompanios } = useCompanios();
+  const { getMinimumScoreForCompanio, isMinimumCheckEnabled } =
+    useMinimumScores();
 
   return (
     <TableContainer>
@@ -117,7 +143,15 @@ const Leaderboard = () => {
         </Row>
         {scores
           .filter((score) => selectedCompanios.includes(score.user.companio.id))
-          .map((score, index) => Score(score, index + 1))}
+          .map((score, index) =>
+            Score(
+              score,
+              index + 1,
+              isMinimumCheckEnabled,
+              score.first_half_score >=
+                getMinimumScoreForCompanio(score.user.companio.id)
+            )
+          )}
       </InnerContainer>
     </TableContainer>
   );

@@ -8,7 +8,11 @@ import { corben } from '@/react-things/fonts';
 import { usePeriods } from '@/react-things/providers/PeriodsProvider';
 import { formatDate } from '@/react-things/utils/date';
 
-const Container = styled.section``;
+const Container = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: ${16 / 16}rem;
+`;
 
 const Title = styled.h1``;
 

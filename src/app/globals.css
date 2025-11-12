@@ -75,6 +75,6 @@ h6 {
 /*
   Custom Global Styles
 */
-body > * {
+* {
   transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
 }

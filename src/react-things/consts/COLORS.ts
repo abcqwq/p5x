@@ -28,6 +28,9 @@ export const LIGHT_COLORS = {
   '--border-base': 'solid 1px hsl(0deg 0% 75%)',
   '--highlight-base': 'solid 1px hsl(0deg 0% 90%)',
 
+  '--color-danger': 'hsl(0deg 70% 50%)',
+  '--color-success': 'hsl(120deg 70% 40%)',
+
   ...COMMON_COLORS
 };
 
@@ -43,6 +46,9 @@ export const DARK_COLORS = {
 
   '--border-base': 'solid 1px hsl(0deg 0% 30%)',
   '--highlight-base': 'solid 1px hsl(0deg 0% 60%)',
+
+  '--color-danger': 'hsl(0deg 70% 60%)',
+  '--color-success': 'hsl(120deg 70% 70%)',
 
   ...COMMON_COLORS
 };
