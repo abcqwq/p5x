@@ -5,6 +5,7 @@ import { companioMapper } from '@/server-things/utils/p5x';
 import { validateAdminId, getOptionValue } from '@/server-things/utils/discord';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
 import { fetchActiveNightmareGatewayPeriod } from '@/handlers/fetch-nightmare-period';
+import { STREGA_URL_MESSAGE } from '@/server-things/utils/base-responses';
 
 export const register = new SlashCommandBuilder()
   .setName('set-kkm')
@@ -125,7 +126,7 @@ export const execute: executeCommand = async (interaction) => {
     return {
       type: 4,
       data: {
-        content: `KKM for **${companioName}** has been set to **${minimumScoreNum.toLocaleString()}** for the current Nightmare Gateway period.`
+        content: `KKM for **${companioName}** has been set to **${minimumScoreNum.toLocaleString()}** for the current Nightmare Gateway period.${STREGA_URL_MESSAGE}`
       }
     };
   } catch (error) {

@@ -3,6 +3,7 @@ import type { executeCommand } from '@/server-things/discord/types';
 import { prisma } from '@/handlers/prisma';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
 import { fetchActiveNightmareGatewayPeriod } from '@/handlers/fetch-nightmare-period';
+import { STREGA_URL_MESSAGE } from '@/server-things/utils/base-responses';
 
 export const register = new SlashCommandBuilder()
   .setName('score')
@@ -98,7 +99,7 @@ export const execute: executeCommand = async (interaction) => {
       return {
         type: 4,
         data: {
-          content: `Successfully updated your score to **${scoreValue.toLocaleString()}**!`
+          content: `Successfully updated your score to **${scoreValue.toLocaleString()}**!${STREGA_URL_MESSAGE}`
         }
       };
     } else {
@@ -114,7 +115,7 @@ export const execute: executeCommand = async (interaction) => {
       return {
         type: 4,
         data: {
-          content: `Successfully recorded your score of **${scoreValue.toLocaleString()}**!`
+          content: `Successfully recorded your score of **${scoreValue.toLocaleString()}**!${STREGA_URL_MESSAGE}`
         }
       };
     }

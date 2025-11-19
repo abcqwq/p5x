@@ -4,6 +4,7 @@ import { prisma } from '@/handlers/prisma';
 import { getOptionValue } from '@/server-things/utils/discord';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
 import { fetchActiveNightmareGatewayPeriod } from '@/handlers/fetch-nightmare-period';
+import { STREGA_URL_MESSAGE } from '@/server-things/utils/base-responses';
 
 export const register = new SlashCommandBuilder()
   .setName('score-alt')
@@ -114,7 +115,7 @@ export const execute: executeCommand = async (interaction) => {
       return {
         type: 4,
         data: {
-          content: `Successfully updated alt #${altNumber} score to **${scoreValue.toLocaleString()}**!`
+          content: `Successfully updated alt #${altNumber} score to **${scoreValue.toLocaleString()}**!${STREGA_URL_MESSAGE}`
         }
       };
     } else {
@@ -130,7 +131,7 @@ export const execute: executeCommand = async (interaction) => {
       return {
         type: 4,
         data: {
-          content: `Successfully recorded alt #${altNumber} score of **${scoreValue.toLocaleString()}**!`
+          content: `Successfully recorded alt #${altNumber} score of **${scoreValue.toLocaleString()}**!${STREGA_URL_MESSAGE}`
         }
       };
     }

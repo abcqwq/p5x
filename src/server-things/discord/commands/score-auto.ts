@@ -5,6 +5,7 @@ import { extractTextFromImage } from '@/handlers/process-score';
 import { parseScoreData } from '@/utils/parse-score-data';
 import { processScoreUpdates } from '@/handlers/update-scores';
 import { prisma } from '@/handlers/prisma';
+import { STREGA_URL_MESSAGE } from '@/server-things/utils/base-responses';
 
 export const register = new SlashCommandBuilder()
   .setName('score-auto')
@@ -199,7 +200,7 @@ async function processMessage(
           );
         }
 
-        const followUpContent = messageParts.join('\n');
+        const followUpContent = messageParts.join('\n') + STREGA_URL_MESSAGE;
 
         await sendFollowUpMessage(
           applicationId,

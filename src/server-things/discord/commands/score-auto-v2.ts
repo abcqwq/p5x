@@ -5,6 +5,7 @@ import { parseScoresDataString } from '@/utils/parse-score-data';
 import { processScoreUpdates } from '@/handlers/update-scores';
 import discordClient from '@/bridge-things/network/http-client/discord-client';
 import { fetchActiveNightmareGatewayPeriod } from '@/handlers/fetch-nightmare-period';
+import { STREGA_URL_MESSAGE } from '@/server-things/utils/base-responses';
 
 const WHITELISTED_ADMIN_IDS = new Set<string>(
   process.env.WHITELISTED_ADMIN_IDS?.split(',').map((id) => id.trim()) || []
@@ -105,7 +106,9 @@ async function processScoresData(
     }
 
     const followUpContent =
-      messageParts.length > 0 ? messageParts.join('\n') : 'No data to process.';
+      messageParts.length > 0
+        ? messageParts.join('\n') + STREGA_URL_MESSAGE
+        : 'No data to process.';
 
     await sendFollowUpMessage(applicationId, interactionToken, followUpContent);
   } catch (error) {

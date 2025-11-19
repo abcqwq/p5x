@@ -7,6 +7,7 @@ import type {
   APIChatInputApplicationCommandInteractionData,
   APIChatInputApplicationCommandInteractionDataResolved
 } from 'discord-api-types/v10';
+import { STREGA_URL_MESSAGE } from '@/server-things/utils/base-responses';
 
 export const register = new SlashCommandBuilder()
   .setName('register-alt')
@@ -134,7 +135,7 @@ export const execute: executeCommand = async (interaction) => {
     return {
       type: 4,
       data: {
-        content: `Successfully registered <@${targetUserId}> #${altNumber} alt!\n**Display Name:** ${displayName}\n**Companio:** ${companioName}\n**Alt Number:** ${altNumber}`
+        content: `Successfully registered <@${targetUserId}> #${altNumber} alt!\n**Display Name:** ${displayName}\n**Companio:** ${companioName}\n**Alt Number:** ${altNumber}${STREGA_URL_MESSAGE}`
       }
     };
   } catch (error) {

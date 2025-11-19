@@ -7,6 +7,7 @@ import {
 } from '@/server-things/utils/discord';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
 import { formatDate } from '@/react-things/utils/date';
+import { STREGA_URL_MESSAGE } from '@/server-things/utils/base-responses';
 
 export const register = new SlashCommandBuilder()
   .setName('period-setup')
@@ -152,7 +153,7 @@ export const execute: executeCommand = async (interaction) => {
     return {
       type: 4,
       data: {
-        content: `Nightmare Gateway Period #${newPeriod.number} has been created successfully!\n\n**Details:**\n- First Half: **${firstHalfBossName}** (${firstHalfBossType})\n- Second Half: **${secondHalfBossName}** (${secondHalfBossType})\n- Start: ${formatDate(startDate)}\n- End: ${formatDate(endDate)}`
+        content: `Nightmare Gateway Period #${newPeriod.number} has been created successfully!\n\n**Details:**\n- First Half: **${firstHalfBossName}** (${firstHalfBossType})\n- Second Half: **${secondHalfBossName}** (${secondHalfBossType})\n- Start: ${formatDate(startDate)}\n- End: ${formatDate(endDate)}${STREGA_URL_MESSAGE}`
       }
     };
   } catch (error) {

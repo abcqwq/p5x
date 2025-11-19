@@ -4,6 +4,7 @@ import { companioMapper } from '@/server-things/utils/p5x';
 import { getOptionValue } from '@/server-things/utils/discord';
 import type { APIChatInputApplicationCommandInteractionData } from 'discord-api-types/v10';
 import type { executeCommand } from '@/server-things/discord/types';
+import { STREGA_URL_MESSAGE } from '@/server-things/utils/base-responses';
 
 export const register = new SlashCommandBuilder()
   .setName('register')
@@ -84,7 +85,7 @@ export const execute: executeCommand = async (interaction) => {
     return {
       type: 4,
       data: {
-        content: `Successfully registered!\n**Display Name:** ${displayName}\n**Companio:** ${companioName}`
+        content: `Successfully registered!\n**Display Name:** ${displayName}\n**Companio:** ${companioName}${STREGA_URL_MESSAGE}`
       }
     };
   } catch (error) {

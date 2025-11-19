@@ -5,6 +5,7 @@ import type {
   APIChatInputApplicationCommandInteractionData,
   APIChatInputApplicationCommandInteractionDataResolved
 } from 'discord-api-types/v10';
+import { STREGA_URL_MESSAGE } from '@/server-things/utils/base-responses';
 
 const companioMapper: Record<string, string> = {
   strega: 'Strega',
@@ -145,6 +146,7 @@ export const execute: executeCommand = async (interaction) => {
       const companioName = companioMapper[updatedUser.companio_id] || 'Unknown';
       responseMessage += `\n**Companio:** ${companioName}`;
     }
+    responseMessage += STREGA_URL_MESSAGE;
 
     return {
       type: 4,

@@ -7,6 +7,7 @@ import type {
 } from 'discord-api-types/v10';
 import { getOptionValue } from '@/server-things/utils/discord';
 import { fetchActiveNightmareGatewayPeriod } from '@/handlers/fetch-nightmare-period';
+import { STREGA_URL_MESSAGE } from '@/server-things/utils/base-responses';
 
 // Whitelist of Discord user IDs allowed to record scores for other members
 const WHITELISTED_ADMIN_IDS = new Set<string>(
@@ -159,7 +160,7 @@ export const execute: executeCommand = async (interaction) => {
       return {
         type: 4,
         data: {
-          content: `Successfully updated score for <@${targetUserId}> (**${user.name}**) to **${scoreValue.toLocaleString()}**!`
+          content: `Successfully updated score for <@${targetUserId}> (**${user.name}**) to **${scoreValue.toLocaleString()}**!${STREGA_URL_MESSAGE}`
         }
       };
     } else {
@@ -176,7 +177,7 @@ export const execute: executeCommand = async (interaction) => {
       return {
         type: 4,
         data: {
-          content: `Successfully recorded score of **${scoreValue.toLocaleString()}** for <@${targetUserId}> (**${user.name}**)!`
+          content: `Successfully recorded score of **${scoreValue.toLocaleString()}** for <@${targetUserId}> (**${user.name}**)!${STREGA_URL_MESSAGE}`
         }
       };
     }

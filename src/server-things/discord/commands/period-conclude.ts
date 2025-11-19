@@ -3,6 +3,7 @@ import type { executeCommand } from '@/server-things/discord/types';
 import { prisma } from '@/handlers/prisma';
 import { validateSuperAdminId } from '@/server-things/utils/discord';
 import { formatDate } from '@/react-things/utils/date';
+import { STREGA_URL_MESSAGE } from '@/server-things/utils/base-responses';
 
 export const register = new SlashCommandBuilder()
   .setName('period-conclude')
@@ -105,7 +106,7 @@ export const execute: executeCommand = async (interaction) => {
     return {
       type: 4,
       data: {
-        content: `Successfully concluded Nightmare Gateway Period #${latestUnfrozenPeriod.number}!\n\nCreated **${result.count}** score snapshot(s)\n🔒 Period is now frozen\nPeriod: ${formatDate(latestUnfrozenPeriod.start)} - ${formatDate(latestUnfrozenPeriod.end)}`
+        content: `Successfully concluded Nightmare Gateway Period #${latestUnfrozenPeriod.number}!\n\nCreated **${result.count}** score snapshot(s)\n🔒 Period is now frozen\nPeriod: ${formatDate(latestUnfrozenPeriod.start)} - ${formatDate(latestUnfrozenPeriod.end)}${STREGA_URL_MESSAGE}`
       }
     };
   } catch (error) {
