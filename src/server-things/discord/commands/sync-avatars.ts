@@ -64,112 +64,173 @@ async function syncAvatars(applicationId: string, interactionToken: string) {
       userChunks.push(users.slice(i, i + CONCURRENCY_LIMIT));
     }
 
-    let retryAfterMs = 0; // Track retry-after from rate limit errors
-
+    // Process each batch with retry logic
     for (let chunkIndex = 0; chunkIndex < userChunks.length; chunkIndex++) {
-      const chunk = userChunks[chunkIndex];
+      let retryCount = 0;
+      const MAX_RETRIES = 3;
+      let retryAfterMs = 0;
+      let batchSucceeded = false;
 
-      await Promise.all(
-        chunk.map(async (user) => {
-          try {
-            // Extract clean Discord ID (remove everything after '@' if present)
-            const cleanDiscordId = user.id.split('@')[0];
+      while (retryCount <= MAX_RETRIES && !batchSucceeded) {
+        const chunk = userChunks[chunkIndex];
+        const batchErrors: { user: (typeof users)[0]; error: unknown }[] = [];
 
-            // Fetch user data from Discord API
-            const discordUserResponse = await discordClient.get<DiscordUser>(
-              `/api/v10/users/${cleanDiscordId}`
-            );
+        try {
+          const results = await Promise.allSettled(
+            chunk.map(async (user) => {
+              try {
+                // Extract clean Discord ID (remove everything after '@' if present)
+                const cleanDiscordId = user.id.split('@')[0];
 
-            const discordUser = discordUserResponse.data;
-            const newAvatarUrl = buildAvatarUrl(
-              discordUser.id,
-              discordUser.avatar
-            );
-
-            // Update user avatar in database if it changed
-            if (newAvatarUrl !== user.avatar_url) {
-              await prisma.user.update({
-                where: { id: user.id },
-                data: { avatar_url: newAvatarUrl }
-              });
-
-              syncedUsers.push({
-                name: user.name,
-                oldUrl: user.avatar_url,
-                newUrl: newAvatarUrl
-              });
-            }
-          } catch (error) {
-            // Log full response body if available for rate limit errors
-            if (error instanceof Error && error.message.includes('429')) {
-              console.error(
-                `Rate limit error for user ${user.id}:`,
-                error.message
-              );
-              if ('response' in error && error.response) {
-                const response = error.response as {
-                  status?: number;
-                  statusText?: string;
-                  data?: unknown;
-                  headers?: Record<string, unknown>;
-                };
-                console.error('Response status:', response.status);
-                console.error(
-                  'Response body:',
-                  JSON.stringify(response.data, null, 2)
-                );
-                console.error('Rate limit headers:', {
-                  'Retry-After': response.headers?.['retry-after'],
-                  'X-RateLimit-Remaining':
-                    response.headers?.['x-ratelimit-remaining'],
-                  'X-RateLimit-Reset': response.headers?.['x-ratelimit-reset'],
-                  'X-RateLimit-Reset-After':
-                    response.headers?.['x-ratelimit-reset-after']
-                });
-
-                // Extract retry-after value
-                const retryAfterValue =
-                  response.headers?.['retry-after'] ||
-                  (response.data as { retry_after?: number } | undefined)
-                    ?.retry_after;
-
-                if (retryAfterValue) {
-                  const retryAfterSeconds = parseFloat(String(retryAfterValue));
-                  retryAfterMs = Number.isNaN(retryAfterSeconds)
-                    ? 60000
-                    : Math.ceil(retryAfterSeconds * 1000);
-                  console.log(
-                    `Extracted retry-after: ${retryAfterSeconds}s (${retryAfterMs}ms)`
+                // Fetch user data from Discord API
+                const discordUserResponse =
+                  await discordClient.get<DiscordUser>(
+                    `/api/v10/users/${cleanDiscordId}`
                   );
-                } else {
-                  retryAfterMs = 60000; // Default to 60 seconds
-                  console.log('No retry-after value found, defaulting to 60s');
+
+                const discordUser = discordUserResponse.data;
+                const newAvatarUrl = buildAvatarUrl(
+                  discordUser.id,
+                  discordUser.avatar
+                );
+
+                // Update user avatar in database if it changed
+                if (newAvatarUrl !== user.avatar_url) {
+                  await prisma.user.update({
+                    where: { id: user.id },
+                    data: { avatar_url: newAvatarUrl }
+                  });
+
+                  syncedUsers.push({
+                    name: user.name,
+                    oldUrl: user.avatar_url,
+                    newUrl: newAvatarUrl
+                  });
+                }
+              } catch (error) {
+                throw error;
+              }
+            })
+          );
+
+          // Check for any failures in the batch
+          results.forEach((result, index) => {
+            if (result.status === 'rejected') {
+              const user = chunk[index];
+              const error = result.reason;
+
+              // Extract retry-after from rate limit errors
+              if (error instanceof Error && error.message.includes('429')) {
+                if ('response' in error && error.response) {
+                  const response = error.response as {
+                    status?: number;
+                    statusText?: string;
+                    data?: { retry_after?: number; message?: string };
+                    headers?: Record<string, unknown>;
+                  };
+
+                  console.error(
+                    `Rate limit error for user ${user.id}:`,
+                    error.message
+                  );
+                  console.error('Response status:', response.status);
+                  console.error(
+                    'Response body:',
+                    JSON.stringify(response.data, null, 2)
+                  );
+                  console.error('Rate limit headers:', {
+                    'Retry-After': response.headers?.['retry-after'],
+                    'X-RateLimit-Remaining':
+                      response.headers?.['x-ratelimit-remaining'],
+                    'X-RateLimit-Reset':
+                      response.headers?.['x-ratelimit-reset'],
+                    'X-RateLimit-Reset-After':
+                      response.headers?.['x-ratelimit-reset-after']
+                  });
+
+                  // Extract retry-after value from body first, then headers
+                  const retryAfterValue =
+                    response.data?.retry_after ||
+                    response.headers?.['retry-after'];
+
+                  if (retryAfterValue) {
+                    const retryAfterSeconds = parseFloat(
+                      String(retryAfterValue)
+                    );
+                    retryAfterMs = Number.isNaN(retryAfterSeconds)
+                      ? 60000
+                      : Math.ceil(retryAfterSeconds * 1000);
+                    console.log(
+                      `Extracted retry-after: ${retryAfterSeconds}s (${retryAfterMs}ms)`
+                    );
+                  } else {
+                    retryAfterMs = 60000; // Default to 60 seconds
+                    console.log(
+                      'No retry-after value found, defaulting to 60s'
+                    );
+                  }
                 }
               }
-            }
-            console.error(`Error syncing avatar for user ${user.id}:`, error);
-            failedUsers.push({
-              name: user.name,
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Unknown error occurred'
-            });
-          }
-        })
-      );
 
-      // Wait before fetching the next batch (unless it's the last batch)
-      if (chunkIndex < userChunks.length - 1) {
-        // Use retry-after from rate limit error if available, otherwise use 1 minute
-        const waitTimeMs = retryAfterMs || 5000;
-        const waitTimeSec = waitTimeMs / 1000;
-        console.log(
-          `Batch ${chunkIndex + 1} complete. Waiting ${waitTimeSec}s before next batch...`
-        );
-        await new Promise((resolve) => setTimeout(resolve, waitTimeMs));
-        console.log(`Resuming with batch ${chunkIndex + 2}...`);
-        retryAfterMs = 0; // Reset for next batch
+              batchErrors.push({ user, error });
+            }
+          });
+
+          // If there were any errors, mark batch as failed and retry
+          if (batchErrors.length > 0) {
+            if (retryCount < MAX_RETRIES) {
+              const waitTimeMs = retryAfterMs || 5000;
+              const waitTimeSec = waitTimeMs / 1000;
+              console.log(
+                `Batch ${chunkIndex + 1} had ${batchErrors.length} errors. ` +
+                  `Retrying in ${waitTimeSec}s (retry ${retryCount + 1}/${MAX_RETRIES})...`
+              );
+              await new Promise((resolve) => setTimeout(resolve, waitTimeMs));
+              retryCount++;
+            } else {
+              // Max retries exceeded, add all errors to failed users
+              console.error(
+                `Batch ${chunkIndex + 1} failed after ${MAX_RETRIES} retries`
+              );
+              batchErrors.forEach(({ user, error }) => {
+                failedUsers.push({
+                  name: user.name,
+                  error:
+                    error instanceof Error
+                      ? error.message
+                      : 'Unknown error occurred'
+                });
+              });
+              batchSucceeded = true;
+            }
+          } else {
+            // Batch succeeded
+            batchSucceeded = true;
+            console.log(`Batch ${chunkIndex + 1} complete.`);
+
+            // Wait before fetching the next batch (unless it's the last batch)
+            if (chunkIndex < userChunks.length - 1) {
+              console.log(
+                `Waiting 5s before processing batch ${chunkIndex + 2}...`
+              );
+              await new Promise((resolve) => setTimeout(resolve, 5000));
+            }
+          }
+        } catch (error) {
+          console.error(`Unexpected error in batch ${chunkIndex + 1}:`, error);
+          if (retryCount < MAX_RETRIES) {
+            console.log(
+              `Retrying batch ${chunkIndex + 1} (retry ${retryCount + 1}/${MAX_RETRIES})...`
+            );
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+            retryCount++;
+          } else {
+            console.error(
+              `Batch ${chunkIndex + 1} failed with unexpected error after ${MAX_RETRIES} retries`
+            );
+            batchSucceeded = true;
+          }
+        }
       }
     }
 
