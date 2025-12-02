@@ -14,6 +14,7 @@ import * as scoreAltCommand from '@/server-things/discord/commands/score-alt';
 import * as concludePeriodCommand from '@/server-things/discord/commands/period-conclude';
 import * as periodSetupCommand from '@/server-things/discord/commands/period-setup';
 import * as syncAvatarsCommand from '@/server-things/discord/commands/sync-avatars';
+import * as showNoScoresCommand from '@/server-things/discord/commands/show-no-scores';
 
 export type CommandModule = {
   register: unknown & { toJSON: () => unknown };
@@ -34,7 +35,8 @@ const commandModules: Record<string, CommandModule> = {
   'score-alt': scoreAltCommand,
   'period-conclude': concludePeriodCommand,
   'period-setup': periodSetupCommand,
-  'sync-avatars': syncAvatarsCommand
+  'sync-avatars': syncAvatarsCommand,
+  'show-no-scores': showNoScoresCommand
 };
 
 const getCommands = () => {
