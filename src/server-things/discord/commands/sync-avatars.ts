@@ -162,7 +162,7 @@ async function syncAvatars(applicationId: string, interactionToken: string) {
       // Wait before fetching the next batch (unless it's the last batch)
       if (chunkIndex < userChunks.length - 1) {
         // Use retry-after from rate limit error if available, otherwise use 1 minute
-        const waitTimeMs = retryAfterMs || 60000;
+        const waitTimeMs = retryAfterMs || 5000;
         const waitTimeSec = waitTimeMs / 1000;
         console.log(
           `Batch ${chunkIndex + 1} complete. Waiting ${waitTimeSec}s before next batch...`
