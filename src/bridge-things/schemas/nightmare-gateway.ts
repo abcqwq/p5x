@@ -1,4 +1,4 @@
-import { number, z } from 'zod';
+import { z } from 'zod';
 
 export const CompanioSchema = z.object({
   id: z.string(),
@@ -45,6 +45,8 @@ export const CompanioPeriodMinimumScoreSchema = z.object({
 export type Companios = z.infer<typeof CompanioSchema>[];
 
 export type NightmareGatewayScore = z.infer<typeof NightmareGatewayScoreSchema>;
+
+export type User = z.infer<typeof UserSchema>;
 
 export type NightmareGatewayScores = z.infer<
   typeof NightmareGatewayScoreSchema
