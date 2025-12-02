@@ -57,7 +57,7 @@ async function syncAvatars(applicationId: string, interactionToken: string) {
     const failedUsers: { name: string; error: string }[] = [];
 
     // Process users with concurrency limit (Discord API rate limiting)
-    const CONCURRENCY_LIMIT = 5;
+    const CONCURRENCY_LIMIT = 20;
     const userChunks: (typeof users)[] = [];
 
     for (let i = 0; i < users.length; i += CONCURRENCY_LIMIT) {
