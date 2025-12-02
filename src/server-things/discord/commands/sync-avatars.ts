@@ -178,7 +178,7 @@ async function syncAvatars(applicationId: string, interactionToken: string) {
           // If there were any errors, mark batch as failed and retry
           if (batchErrors.length > 0) {
             if (retryCount < MAX_RETRIES) {
-              const waitTimeMs = retryAfterMs || 5000;
+              const waitTimeMs = retryAfterMs || 15000;
               const waitTimeSec = waitTimeMs / 1000;
               console.log(
                 `Batch ${chunkIndex + 1} had ${batchErrors.length} errors. ` +
