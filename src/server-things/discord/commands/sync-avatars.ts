@@ -64,7 +64,11 @@ async function syncAvatars(applicationId: string, interactionToken: string) {
       userChunks.push(users.slice(i, i + CONCURRENCY_LIMIT));
     }
 
-    for (const chunk of userChunks) {
+    let retryAfterMs = 0; // Track retry-after from rate limit errors
+
+    for (let chunkIndex = 0; chunkIndex < userChunks.length; chunkIndex++) {
+      const chunk = userChunks[chunkIndex];
+
       await Promise.all(
         chunk.map(async (user) => {
           try {
@@ -96,6 +100,53 @@ async function syncAvatars(applicationId: string, interactionToken: string) {
               });
             }
           } catch (error) {
+            // Log full response body if available for rate limit errors
+            if (error instanceof Error && error.message.includes('429')) {
+              console.error(
+                `Rate limit error for user ${user.id}:`,
+                error.message
+              );
+              if ('response' in error && error.response) {
+                const response = error.response as {
+                  status?: number;
+                  statusText?: string;
+                  data?: unknown;
+                  headers?: Record<string, unknown>;
+                };
+                console.error('Response status:', response.status);
+                console.error(
+                  'Response body:',
+                  JSON.stringify(response.data, null, 2)
+                );
+                console.error('Rate limit headers:', {
+                  'Retry-After': response.headers?.['retry-after'],
+                  'X-RateLimit-Remaining':
+                    response.headers?.['x-ratelimit-remaining'],
+                  'X-RateLimit-Reset': response.headers?.['x-ratelimit-reset'],
+                  'X-RateLimit-Reset-After':
+                    response.headers?.['x-ratelimit-reset-after']
+                });
+
+                // Extract retry-after value
+                const retryAfterValue =
+                  response.headers?.['retry-after'] ||
+                  (response.data as { retry_after?: number } | undefined)
+                    ?.retry_after;
+
+                if (retryAfterValue) {
+                  const retryAfterSeconds = parseFloat(String(retryAfterValue));
+                  retryAfterMs = Number.isNaN(retryAfterSeconds)
+                    ? 60000
+                    : Math.ceil(retryAfterSeconds * 1000);
+                  console.log(
+                    `Extracted retry-after: ${retryAfterSeconds}s (${retryAfterMs}ms)`
+                  );
+                } else {
+                  retryAfterMs = 60000; // Default to 60 seconds
+                  console.log('No retry-after value found, defaulting to 60s');
+                }
+              }
+            }
             console.error(`Error syncing avatar for user ${user.id}:`, error);
             failedUsers.push({
               name: user.name,
@@ -107,6 +158,19 @@ async function syncAvatars(applicationId: string, interactionToken: string) {
           }
         })
       );
+
+      // Wait before fetching the next batch (unless it's the last batch)
+      if (chunkIndex < userChunks.length - 1) {
+        // Use retry-after from rate limit error if available, otherwise use 1 minute
+        const waitTimeMs = retryAfterMs || 60000;
+        const waitTimeSec = waitTimeMs / 1000;
+        console.log(
+          `Batch ${chunkIndex + 1} complete. Waiting ${waitTimeSec}s before next batch...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, waitTimeMs));
+        console.log(`Resuming with batch ${chunkIndex + 2}...`);
+        retryAfterMs = 0; // Reset for next batch
+      }
     }
 
     // Build follow-up message
