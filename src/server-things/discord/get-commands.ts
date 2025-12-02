@@ -13,6 +13,7 @@ import * as registerAltCommand from '@/server-things/discord/commands/register-a
 import * as scoreAltCommand from '@/server-things/discord/commands/score-alt';
 import * as concludePeriodCommand from '@/server-things/discord/commands/period-conclude';
 import * as periodSetupCommand from '@/server-things/discord/commands/period-setup';
+import * as syncAvatarsCommand from '@/server-things/discord/commands/sync-avatars';
 
 export type CommandModule = {
   register: unknown & { toJSON: () => unknown };
@@ -32,7 +33,8 @@ const commandModules: Record<string, CommandModule> = {
   'register-alt': registerAltCommand,
   'score-alt': scoreAltCommand,
   'period-conclude': concludePeriodCommand,
-  'period-setup': periodSetupCommand
+  'period-setup': periodSetupCommand,
+  'sync-avatars': syncAvatarsCommand
 };
 
 const getCommands = () => {
