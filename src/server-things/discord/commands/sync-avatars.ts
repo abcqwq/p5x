@@ -149,22 +149,21 @@ async function syncAvatars(applicationId: string, interactionToken: string) {
                   });
 
                   // Extract retry-after value from body first, then headers
-                  const retryAfterValue =
-                    response.data?.retry_after ||
-                    response.headers?.['retry-after'];
+                  const retryAfterValue = response.headers?.['retry-after'];
 
                   if (retryAfterValue) {
-                    const retryAfterSeconds = parseFloat(
-                      String(retryAfterValue)
+                    const retryAfterSeconds = parseInt(
+                      String(retryAfterValue),
+                      10
                     );
                     retryAfterMs = Number.isNaN(retryAfterSeconds)
-                      ? 60000
+                      ? 30000
                       : Math.ceil(retryAfterSeconds * 1000);
                     console.log(
                       `Extracted retry-after: ${retryAfterSeconds}s (${retryAfterMs}ms)`
                     );
                   } else {
-                    retryAfterMs = 60000; // Default to 60 seconds
+                    retryAfterMs = 30000; // Default to 60 seconds
                     console.log(
                       'No retry-after value found, defaulting to 60s'
                     );
