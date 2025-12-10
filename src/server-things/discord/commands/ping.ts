@@ -6,6 +6,8 @@ export const register = new SlashCommandBuilder()
   .setDescription("pong's you back! (bot check)");
 
 export const execute: executeCommand = async (interaction) => {
+  console.log('Ping command executed by', interaction.member?.user.username);
+
   return {
     type: 4,
     data: {
