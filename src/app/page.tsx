@@ -13,6 +13,19 @@ import { fetchCompanios } from '@/handlers/fetch-companios';
 import { fetchNightmareGatewayScores } from '@/handlers/fetch-gateway-scores';
 import { fetchMinimumScores } from '@/handlers/fetch-minimum-scores';
 
+export const metadata = {
+  openGraph: {
+    title: 'Strega Alliance',
+    images: [
+      {
+        url: `${process.env.STREGA_URL}/og`,
+        width: 1200,
+        height: 630
+      }
+    ]
+  }
+};
+
 const Page = async () => {
   const [activePeriod, companios] = await Promise.all([
     fetchActiveNightmareGatewayPeriod(),
