@@ -24,7 +24,8 @@ export const register = new SlashCommandBuilder()
         { name: 'Strega', value: 'strega' },
         { name: 'Zoshigaya', value: 'zoshigaya' },
         { name: 'Zoshigaya Zen', value: 'zoshigaya_zen' },
-        { name: 'Zoshigaya Zoku', value: 'zoshigaya_zoku' }
+        { name: 'Zoshigaya Zoku', value: 'zoshigaya_zoku' },
+        { name: 'Zoshigaya Kai', value: 'zoshigaya_kai' }
       )
   );
 

@@ -11,7 +11,8 @@ const companioMapper: Record<string, string> = {
   strega: 'Strega',
   zoshigaya: 'Zoshigaya',
   zoshigaya_zen: 'Zoshigaya Zen',
-  zoshigaya_zoku: 'Zoshigaya Zoku'
+  zoshigaya_zoku: 'Zoshigaya Zoku',
+  zoshigaya_kai: 'Zoshigaya Kai'
 };
 
 // Whitelist of Discord user IDs allowed to register other members
@@ -40,7 +41,8 @@ export const register = new SlashCommandBuilder()
         { name: 'Strega', value: 'strega' },
         { name: 'Zoshigaya', value: 'zoshigaya' },
         { name: 'Zoshigaya Zen', value: 'zoshigaya_zen' },
-        { name: 'Zoshigaya Zoku', value: 'zoshigaya_zoku' }
+        { name: 'Zoshigaya Zoku', value: 'zoshigaya_zoku' },
+        { name: 'Zoshigaya Kai', value: 'zoshigaya_kai' }
       )
   );
 
