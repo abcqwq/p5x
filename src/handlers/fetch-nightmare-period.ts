@@ -19,10 +19,6 @@ export async function fetchActiveNightmareGatewayPeriod(): Promise<NightmareGate
     return null;
   }
 
-  if (period.end < new Date()) {
-    return null;
-  }
-
   const parsed = NightmareGatewayPeriodSchema.parse(period);
   return parsed;
 }
