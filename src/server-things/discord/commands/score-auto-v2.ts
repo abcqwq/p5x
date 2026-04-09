@@ -164,15 +164,6 @@ export const execute: executeCommand = async (interaction) => {
     };
   }
 
-  if (activePeriod.end < new Date()) {
-    return {
-      type: 4,
-      data: {
-        content: `The current Nightmare Gateway period has ended. Please wait for the next period to start.`
-      }
-    };
-  }
-
   // Start processing asynchronously
   processScoresData(
     scoresData,
